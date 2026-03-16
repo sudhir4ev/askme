@@ -4,4 +4,8 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "langchain>=1.2.12",
+    "langchain-community>=0.4.1",
+    "llama-cpp-python>=0.3.16",
+]
