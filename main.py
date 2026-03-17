@@ -1,37 +1,18 @@
-import multiprocessing
+from fastapi import FastAPI
 
-from langchain_community.chat_models import ChatLlamaCpp
+from api.routes import router as api_router
 
-local_model = "/Volumes/data/wk/downloads/Qwen2.5-7B-Instruct-Q4_K_M.gguf"
+app = FastAPI(title="Work History RAG API", version="0.1.0")
 
-def main():
-    llm = ChatLlamaCpp(
-    temperature=0.5,
-    model_path=local_model,
-    n_ctx=10000,
-    n_gpu_layers=8,
-    n_batch=300,  # Should be between 1 and n_ctx, consider the amount of VRAM in your GPU.
-    max_tokens=512,
-    n_threads=multiprocessing.cpu_count() - 1,
-    repeat_penalty=1.5,
-    top_p=0.5,
-    verbose=True,
-    )
+app.include_router(api_router)
 
-    messages = [
-        (
-            "system",
-            "You are a helpful assistant that translates English to French. Translate the user sentence.",
-        ),
-        ("human", "I love programming."),
-    ]
 
-    # ai_msg = llm.invoke(messages)
-    # print(ai_msg.content)
-
-    for chunk in llm.stream(messages):
-        print(chunk.content, end="", flush=True)
+@app.get("/api/v1/health")
+def health_check() -> dict:
+    return {"status": "ok"}
 
 
 if __name__ == "__main__":
-    main()
+    import uvicorn
+
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
