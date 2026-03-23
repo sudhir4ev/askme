@@ -1,0 +1,81 @@
+---
+import Badge from "../ui/Badge.astro";
+import Button from "../ui/Button.astro";
+import Card from "../ui/Card.astro";
+
+interface Props {
+	pkg: string;
+	version: string;
+	license: string;
+	risk: "critical" | "high" | "compliant" | "unknown";
+	hash: string;
+}
+
+const { pkg, version, license, risk, hash } = Astro.props;
+
+const tone =
+	risk === "critical" ? "critical" : risk === "high" ? "high" : risk === "compliant" ? "success" : "muted";
+---
+
+<Card variant="interactive" padding="md">
+	<div class="row">
+		<div>
+			<strong>{pkg}</strong>
+			<small class="mono">{version}</small>
+			<p class="mono">{license}</p>
+		</div>
+		<div class="meta">
+			<Badge tone={tone}>{risk}</Badge>
+			<small class="mono">{hash}</small>
+		</div>
+		<div class="actions">
+			<Button variant="icon"><span class="material-symbols-outlined">visibility</span></Button>
+			<Button variant="secondary" size="sm">{risk === "unknown" ? "Analyze" : "Details"}</Button>
+		</div>
+	</div>
+</Card>
+
+<style>
+	.row {
+		display: grid;
+		grid-template-columns: 2fr auto auto;
+		gap: 1rem;
+		align-items: center;
+	}
+
+	strong {
+		display: block;
+		font-size: 1rem;
+	}
+
+	p {
+		margin: 0.2rem 0 0;
+		font-size: 0.8rem;
+		color: var(--color-text-secondary);
+	}
+
+	small {
+		display: block;
+		color: var(--color-text-secondary);
+		font-size: 0.72rem;
+	}
+
+	.meta {
+		text-align: right;
+	}
+
+	.actions {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+	}
+
+	@media (max-width: 800px) {
+		.row {
+			grid-template-columns: 1fr;
+		}
+		.meta {
+			text-align: left;
+		}
+	}
+</style>

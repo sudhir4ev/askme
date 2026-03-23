@@ -1,0 +1,86 @@
+---
+import Card from "../ui/Card.astro";
+import Button from "../ui/Button.astro";
+import SectionLabel from "../ui/SectionLabel.astro";
+
+interface Item {
+	title: string;
+	body: string;
+	icon: string;
+}
+
+interface Props {
+	title: string;
+	summary: string;
+	items: Item[];
+}
+
+const { title, summary, items } = Astro.props;
+---
+
+<aside class="panel">
+	<Card padding="lg">
+		<h3>{title}</h3>
+		<p>{summary}</p>
+		<Button variant="secondary" size="sm">View Patch Plan</Button>
+	</Card>
+
+	<div class="items">
+		<SectionLabel>Key Recommendations</SectionLabel>
+		{
+			items.map((item) => (
+				<Card padding="md">
+					<div class="item">
+						<span class="material-symbols-outlined">{item.icon}</span>
+						<div>
+							<strong>{item.title}</strong>
+							<p>{item.body}</p>
+						</div>
+					</div>
+				</Card>
+			))
+		}
+	</div>
+</aside>
+
+<style>
+	.panel {
+		display: grid;
+		gap: 0.8rem;
+	}
+
+	h3 {
+		margin: 0;
+	}
+
+	p {
+		color: var(--color-text-secondary);
+		font-size: 0.84rem;
+		line-height: 1.5;
+	}
+
+	.items {
+		display: grid;
+		gap: 0.5rem;
+	}
+
+	.item {
+		display: flex;
+		gap: 0.6rem;
+		align-items: flex-start;
+	}
+
+	.item .material-symbols-outlined {
+		color: var(--color-primary);
+	}
+
+	.item strong {
+		display: block;
+		font-size: 0.82rem;
+	}
+
+	.item p {
+		margin: 0.2rem 0 0;
+		font-size: 0.76rem;
+	}
+</style>

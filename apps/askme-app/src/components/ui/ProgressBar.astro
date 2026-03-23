@@ -1,0 +1,43 @@
+---
+interface Props {
+	value: number;
+	tone?: "primary" | "critical" | "high" | "medium" | "success";
+}
+
+const { value, tone = "primary" } = Astro.props;
+const clamped = Math.max(0, Math.min(100, value));
+---
+
+<div class="progress" aria-hidden="true">
+	<div class:list={["fill", `fill--${tone}`]} style={`width: ${clamped}%`}></div>
+</div>
+
+<style>
+	.progress {
+		width: 100%;
+		height: 0.35rem;
+		border-radius: 999px;
+		background: #e5e7eb;
+		overflow: hidden;
+	}
+
+	.fill {
+		height: 100%;
+		border-radius: inherit;
+	}
+	.fill--primary {
+		background: var(--color-primary);
+	}
+	.fill--critical {
+		background: var(--color-critical);
+	}
+	.fill--high {
+		background: var(--color-high);
+	}
+	.fill--medium {
+		background: var(--color-medium);
+	}
+	.fill--success {
+		background: var(--color-success);
+	}
+</style>

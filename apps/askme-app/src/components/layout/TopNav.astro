@@ -1,0 +1,92 @@
+---
+import Avatar from "../ui/Avatar.astro";
+import Input from "../ui/Input.astro";
+
+interface LinkItem {
+	key: string;
+	label: string;
+	href?: string;
+}
+
+interface Props {
+	links: LinkItem[];
+	active: string;
+	searchPlaceholder?: string;
+}
+
+const { links, active, searchPlaceholder = "Search..." } = Astro.props;
+---
+
+<div class="topnav">
+	<nav>
+		{
+			links.map((link) => (
+				<a class:list={["nav-link", link.key === active && "nav-link--active"]} href={link.href ?? "#"}>
+					{link.label}
+				</a>
+			))
+		}
+	</nav>
+
+	<div class="actions">
+		<div class="search">
+			<Input icon="search" placeholder={searchPlaceholder} />
+		</div>
+		<button class="icon-btn" type="button" aria-label="Notifications">
+			<span class="material-symbols-outlined">notifications</span>
+		</button>
+		<Avatar initials="JD" />
+	</div>
+</div>
+
+<style>
+	.topnav {
+		background: rgb(255 255 255 / 0.9);
+		backdrop-filter: blur(8px);
+		border-bottom: 1px solid var(--color-border);
+		padding: 0.65rem 1.1rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	nav {
+		display: flex;
+		gap: 1.1rem;
+	}
+
+	.nav-link {
+		color: var(--color-text-secondary);
+		font-size: 0.84rem;
+		font-weight: 600;
+		padding-bottom: 0.3rem;
+		border-bottom: 2px solid transparent;
+	}
+
+	.nav-link--active {
+		color: var(--color-primary);
+		border-color: var(--color-primary);
+	}
+
+	.actions {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.search {
+		width: min(18rem, 45vw);
+	}
+
+	.icon-btn {
+		border: 1px solid var(--color-border);
+		background: white;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 999px;
+		display: grid;
+		place-items: center;
+		color: var(--color-text-secondary);
+	}
+</style>

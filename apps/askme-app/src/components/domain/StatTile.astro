@@ -1,0 +1,43 @@
+---
+import Card from "../ui/Card.astro";
+import SectionLabel from "../ui/SectionLabel.astro";
+import ProgressBar from "../ui/ProgressBar.astro";
+
+interface Props {
+	label: string;
+	value: string | number;
+	hint?: string;
+	progress?: number;
+	tone?: "primary" | "critical" | "high" | "medium" | "success";
+}
+
+const { label, value, hint, progress, tone = "primary" } = Astro.props;
+---
+
+<Card variant="interactive" padding="md">
+	<SectionLabel>{label}</SectionLabel>
+	<div class="value-row">
+		<strong>{value}</strong>
+		{hint && <span>{hint}</span>}
+	</div>
+	{typeof progress === "number" && <ProgressBar value={progress} tone={tone} />}
+</Card>
+
+<style>
+	.value-row {
+		display: flex;
+		gap: 0.5rem;
+		align-items: baseline;
+		margin: 0.45rem 0 0.75rem;
+	}
+
+	strong {
+		font-size: 2rem;
+		line-height: 1;
+	}
+
+	span {
+		font-size: 0.75rem;
+		color: var(--color-text-secondary);
+	}
+</style>

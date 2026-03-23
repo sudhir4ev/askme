@@ -1,0 +1,228 @@
+---
+import Button from "../ui/Button.astro";
+import Card from "../ui/Card.astro";
+import Input from "../ui/Input.astro";
+---
+
+<Card padding="lg">
+	<div class="dropzone" data-dropzone role="button" tabindex="0" aria-label="Upload dependency archive">
+		<input class="dropzone-input visually-hidden" data-dropzone-input type="file" accept=".zip,.tar,.tar.gz,.tgz" />
+		<span class="dropzone-hint mono" aria-hidden="true">Drop File</span>
+		<span class="material-symbols-outlined">upload_file</span>
+		<strong data-dropzone-title>Click to upload or drag and drop</strong>
+		<small class="mono">ZIP, TAR.GZ (MAX. 500MB)</small>
+		<small class="dropzone-file mono" data-dropzone-file aria-live="polite"></small>
+	</div>
+
+	<div class="divider">
+		<span>Or link your repository</span>
+	</div>
+
+	<div class="form">
+		<Input icon="link" placeholder="https://github.com/username/repository" />
+		<Button variant="gradient" size="lg" fullWidth={true}>
+			<span class="material-symbols-outlined">rocket_launch</span>
+			Start Scan
+		</Button>
+	</div>
+</Card>
+
+<style>
+	.dropzone {
+		border: 2px dashed var(--color-border);
+		border-radius: var(--radius-lg);
+		height: 15rem;
+		position: relative;
+		overflow: hidden;
+		display: grid;
+		place-items: center;
+		gap: 0.2rem;
+		text-align: center;
+		background: var(--color-bg-secondary);
+		margin-bottom: 1rem;
+		padding: 1rem;
+		cursor: pointer;
+		transition:
+			border-color 0.2s ease,
+			background-color 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.dropzone::before {
+		content: "";
+		position: absolute;
+		inset: 0.6rem;
+		border: 2px dotted #93c5fd;
+		border-radius: calc(var(--radius-lg) - 2px);
+		opacity: 0;
+		transition: opacity 0.2s ease;
+		pointer-events: none;
+	}
+
+	.dropzone > * {
+		position: relative;
+		z-index: 1;
+	}
+
+	.dropzone .material-symbols-outlined {
+		font-size: 2.2rem;
+		color: #2563eb;
+	}
+
+	.dropzone strong {
+		display: block;
+		font-size: 0.9rem;
+	}
+
+	.dropzone small {
+		color: var(--color-muted);
+	}
+
+	.dropzone-file {
+		min-height: 1em;
+		font-size: 0.72rem;
+	}
+
+	.dropzone:hover,
+	.dropzone:focus-visible {
+		border-color: #60a5fa;
+		background: #eff6ff;
+	}
+
+	.dropzone.drag-active {
+		border-color: #2563eb;
+		background: #dbeafe;
+		transform: translateY(-1px);
+	}
+
+	.dropzone.drag-active::before {
+		opacity: 1;
+	}
+
+	.dropzone.has-file {
+		border-color: #2563eb;
+		background: #f8fbff;
+	}
+
+	.dropzone-hint {
+		position: absolute;
+		inset: 0;
+		display: grid;
+		place-items: center;
+		font-size: 1.05rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #1d4ed8;
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity 0.2s ease;
+	}
+
+	.dropzone.drag-active .dropzone-hint {
+		opacity: 0.35;
+	}
+
+	.divider {
+		position: relative;
+		text-align: center;
+		margin: 0.9rem 0 1rem;
+	}
+
+	.divider::before {
+		content: "";
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 50%;
+		border-top: 1px solid var(--color-border);
+	}
+
+	.divider span {
+		position: relative;
+		background: white;
+		padding: 0 0.7rem;
+		font-size: 0.7rem;
+		color: var(--color-text-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.form {
+		display: grid;
+		gap: 0.7rem;
+	}
+</style>
+
+<script>
+	const zones = document.querySelectorAll<HTMLElement>("[data-dropzone]");
+
+	const setFileState = (zone: HTMLElement, file: File | null) => {
+		const title = zone.querySelector<HTMLElement>("[data-dropzone-title]");
+		const fileText = zone.querySelector<HTMLElement>("[data-dropzone-file]");
+
+		if (!title || !fileText) {
+			return;
+		}
+
+		if (file) {
+			zone.classList.add("has-file");
+			title.textContent = "File selected";
+			fileText.textContent = file.name;
+			return;
+		}
+
+		zone.classList.remove("has-file");
+		title.textContent = "Click to upload or drag and drop";
+		fileText.textContent = "";
+	};
+
+	zones.forEach((zone) => {
+		const input = zone.querySelector<HTMLInputElement>("[data-dropzone-input]");
+		if (!input) {
+			return;
+		}
+
+		zone.addEventListener("click", () => input.click());
+		zone.addEventListener("keydown", (event) => {
+			if (event.key === "Enter" || event.key === " ") {
+				event.preventDefault();
+				input.click();
+			}
+		});
+
+		input.addEventListener("change", () => {
+			const file = input.files && input.files.length > 0 ? input.files[0] : null;
+			setFileState(zone, file);
+		});
+
+		["dragenter", "dragover"].forEach((eventName) => {
+			zone.addEventListener(eventName, (event) => {
+				event.preventDefault();
+				zone.classList.add("drag-active");
+			});
+		});
+
+		["dragleave", "dragend"].forEach((eventName) => {
+			zone.addEventListener(eventName, () => {
+				zone.classList.remove("drag-active");
+			});
+		});
+
+		zone.addEventListener("drop", (event) => {
+			event.preventDefault();
+			zone.classList.remove("drag-active");
+
+			const droppedFiles = event.dataTransfer?.files;
+			if (!droppedFiles || droppedFiles.length === 0) {
+				setFileState(zone, null);
+				return;
+			}
+
+			const droppedFile = droppedFiles[0];
+			const dataTransfer = new DataTransfer();
+			dataTransfer.items.add(droppedFile);
+			input.files = dataTransfer.files;
+			setFileState(zone, droppedFile);
+		});
+	});
+</script>

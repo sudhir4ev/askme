@@ -1,0 +1,68 @@
+---
+interface Props {
+	tone?:
+		| "default"
+		| "critical"
+		| "high"
+		| "medium"
+		| "success"
+		| "muted"
+		| "info";
+	size?: "sm" | "md";
+}
+
+const { tone = "default", size = "sm" } = Astro.props;
+---
+
+<span class:list={["badge", `badge--${tone}`, `badge--${size}`]}><slot /></span>
+
+<style>
+	.badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.2rem;
+		border-radius: 999px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.badge--sm {
+		font-size: 0.625rem;
+		padding: 0.2rem 0.5rem;
+	}
+
+	.badge--md {
+		font-size: 0.75rem;
+		padding: 0.3rem 0.6rem;
+	}
+
+	.badge--default {
+		background: #dbeafe;
+		color: #1e3a8a;
+	}
+	.badge--critical {
+		background: #fee2e2;
+		color: #991b1b;
+	}
+	.badge--high {
+		background: #ffedd5;
+		color: #9a3412;
+	}
+	.badge--medium {
+		background: #fef9c3;
+		color: #854d0e;
+	}
+	.badge--success {
+		background: #dcfce7;
+		color: #166534;
+	}
+	.badge--muted {
+		background: #e5e7eb;
+		color: #374151;
+	}
+	.badge--info {
+		background: #e0e7ff;
+		color: #3730a3;
+	}
+</style>

@@ -1,0 +1,57 @@
+---
+import Tabs from "../ui/Tabs.astro";
+import Input from "../ui/Input.astro";
+import Badge from "../ui/Badge.astro";
+
+interface Props {
+	tabItems: { key: string; label: string }[];
+	activeTab: string;
+	searchPlaceholder?: string;
+	showSeverity?: boolean;
+}
+
+const { tabItems, activeTab, searchPlaceholder = "Search...", showSeverity = false } = Astro.props;
+---
+
+<section class="filter">
+	<Tabs items={tabItems} active={activeTab} />
+	<div class="right">
+		<div class="search"><Input icon="search" placeholder={searchPlaceholder} /></div>
+		{showSeverity && (
+			<div class="severity">
+				<Badge tone="critical">Critical</Badge>
+				<Badge tone="high">High</Badge>
+				<Badge tone="medium">Medium</Badge>
+			</div>
+		)}
+	</div>
+</section>
+
+<style>
+	.filter {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.75rem;
+		align-items: center;
+		background: #f3f4f6;
+		border-radius: var(--radius-lg);
+		padding: 0.45rem;
+		flex-wrap: wrap;
+	}
+
+	.right {
+		display: flex;
+		gap: 0.6rem;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+
+	.search {
+		min-width: 14rem;
+	}
+
+	.severity {
+		display: flex;
+		gap: 0.3rem;
+	}
+</style>

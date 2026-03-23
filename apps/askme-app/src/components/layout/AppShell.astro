@@ -1,0 +1,75 @@
+---
+interface Props {
+	withSidebar?: boolean;
+	withTopbar?: boolean;
+	withFooter?: boolean;
+	sidebarWidth?: number;
+}
+
+const { withSidebar = false, withTopbar = false, withFooter = false, sidebarWidth = 256 } = Astro.props;
+---
+
+<div class:list={["shell", withSidebar && "shell--sidebar"]} style={`--sidebar-width:${sidebarWidth}px`}>
+	{withSidebar && (
+		<aside class="shell-sidebar">
+			<slot name="sidebar" />
+		</aside>
+	)}
+
+	<div class="shell-content">
+		{withTopbar && (
+			<header class="shell-topbar">
+				<slot name="topbar" />
+			</header>
+		)}
+		<main class:list={["shell-main", withTopbar && "shell-main--topbar"]}>
+			<slot />
+		</main>
+		{withFooter && (
+			<footer class="shell-footer">
+				<slot name="footer" />
+			</footer>
+		)}
+	</div>
+</div>
+
+<style>
+	.shell {
+		min-height: 100vh;
+	}
+
+	.shell--sidebar {
+		display: grid;
+		grid-template-columns: var(--sidebar-width) 1fr;
+	}
+
+	.shell-sidebar {
+		position: sticky;
+		top: 0;
+		height: 100vh;
+	}
+
+	.shell-topbar {
+		position: sticky;
+		top: 0;
+		z-index: 30;
+	}
+
+	.shell-main {
+		padding: 1.5rem;
+	}
+
+	.shell-main--topbar {
+		padding-top: 1rem;
+	}
+
+	@media (max-width: 960px) {
+		.shell--sidebar {
+			grid-template-columns: 1fr;
+		}
+		.shell-sidebar {
+			position: static;
+			height: auto;
+		}
+	}
+</style>

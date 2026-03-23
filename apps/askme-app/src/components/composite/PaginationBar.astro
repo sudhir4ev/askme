@@ -1,0 +1,45 @@
+---
+import Button from "../ui/Button.astro";
+
+interface Props {
+	label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<div class="pagination">
+	<span>{label}</span>
+	<div class="controls">
+		<Button variant="secondary" size="sm">
+			<span class="material-symbols-outlined">chevron_left</span>
+		</Button>
+		<Button size="sm">1</Button>
+		<Button variant="secondary" size="sm">2</Button>
+		<Button variant="secondary" size="sm">3</Button>
+		<Button variant="secondary" size="sm">
+			<span class="material-symbols-outlined">chevron_right</span>
+		</Button>
+	</div>
+</div>
+
+<style>
+	.pagination {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.6rem;
+		flex-wrap: wrap;
+	}
+
+	span {
+		font-size: 0.8rem;
+		color: var(--color-text-secondary);
+	}
+
+	.controls {
+		display: flex;
+		gap: 0.3rem;
+		align-items: center;
+	}
+</style>

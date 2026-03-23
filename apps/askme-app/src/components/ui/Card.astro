@@ -1,0 +1,50 @@
+---
+interface Props {
+	variant?: "default" | "muted" | "alert" | "interactive";
+	padding?: "sm" | "md" | "lg";
+}
+
+const { variant = "default", padding = "md" } = Astro.props;
+---
+
+<section class:list={["card", `card--${variant}`, `card--${padding}`]}>
+	<slot />
+</section>
+
+<style>
+	.card {
+		background: var(--color-bg-primary);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+	}
+
+	.card--sm {
+		padding: 0.75rem;
+	}
+
+	.card--md {
+		padding: 1rem;
+	}
+
+	.card--lg {
+		padding: 1.5rem;
+	}
+
+	.card--muted {
+		background: var(--color-bg-secondary);
+	}
+
+	.card--alert {
+		background: #fef2f2;
+		border-color: #fecaca;
+	}
+
+	.card--interactive {
+		transition: 0.2s ease;
+	}
+
+	.card--interactive:hover {
+		box-shadow: var(--shadow-sm);
+		transform: translateY(-2px);
+	}
+</style>

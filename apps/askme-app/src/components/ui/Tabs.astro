@@ -1,0 +1,52 @@
+---
+interface TabItem {
+	key: string;
+	label: string;
+}
+
+interface Props {
+	items: TabItem[];
+	active: string;
+	compact?: boolean;
+}
+
+const { items, active, compact = false } = Astro.props;
+---
+
+<nav class:list={["tabs", compact && "tabs--compact"]}>
+	{
+		items.map((item) => (
+			<a class:list={["tab", item.key === active && "tab--active"]} href="#">
+				{item.label}
+			</a>
+		))
+	}
+</nav>
+
+<style>
+	.tabs {
+		display: flex;
+		gap: 0.35rem;
+		flex-wrap: wrap;
+	}
+
+	.tab {
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: #6b7280;
+		padding: 0.35rem 0.6rem;
+		border-radius: var(--radius-sm);
+	}
+
+	.tab--active {
+		background: white;
+		color: var(--color-primary);
+		border: 1px solid var(--color-border);
+	}
+
+	.tabs--compact .tab {
+		padding: 0.2rem 0.45rem;
+	}
+</style>

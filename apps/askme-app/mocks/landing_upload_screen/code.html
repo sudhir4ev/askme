@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Initial Dependency | AI-Powered Reachability Analysis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed-dim": "#b1c6f9",
+              "surface-bright": "#f8f9fa",
+              "on-secondary-fixed-variant": "#304671",
+              "secondary-fixed": "#d8e2ff",
+              "surface-container-low": "#f3f4f5",
+              "on-secondary-fixed": "#001a42",
+              "error": "#ba1a1a",
+              "surface-dim": "#d9dadb",
+              "on-primary": "#ffffff",
+              "outline-variant": "#c2c6d6",
+              "inverse-surface": "#2e3132",
+              "primary-container": "#2170e4",
+              "on-tertiary-container": "#fffbff",
+              "primary": "#0058be",
+              "inverse-primary": "#adc6ff",
+              "on-tertiary-fixed": "#311400",
+              "on-secondary": "#ffffff",
+              "on-error": "#ffffff",
+              "surface-container-highest": "#e1e3e4",
+              "tertiary-container": "#b75b00",
+              "surface-tint": "#005ac2",
+              "on-primary-fixed": "#001a42",
+              "primary-fixed": "#d8e2ff",
+              "on-error-container": "#93000a",
+              "surface-container-high": "#e7e8e9",
+              "on-primary-fixed-variant": "#004395",
+              "outline": "#727785",
+              "surface-variant": "#e1e3e4",
+              "primary-fixed-dim": "#adc6ff",
+              "on-tertiary-fixed-variant": "#723600",
+              "secondary-container": "#b6ccff",
+              "on-secondary-container": "#405682",
+              "tertiary": "#924700",
+              "surface-container": "#edeeef",
+              "tertiary-fixed": "#ffdcc6",
+              "on-primary-container": "#fefcff",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#191c1d",
+              "secondary": "#495e8a",
+              "tertiary-fixed-dim": "#ffb786",
+              "inverse-on-surface": "#f0f1f2",
+              "on-tertiary": "#ffffff",
+              "on-background": "#191c1d",
+              "surface": "#f8f9fa",
+              "error-container": "#ffdad6",
+              "background": "#f8f9fa",
+              "on-surface-variant": "#424754"
+            },
+            fontFamily: {
+              "headline": ["Inter", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"],
+              "mono": ["JetBrains Mono", "monospace"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .bg-gradient-primary {
+        background: linear-gradient(135deg, #0058be 0%, #2170e4 100%);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopNavBar -->
+<header class="w-full sticky top-0 z-50 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm dark:shadow-none">
+<nav class="flex items-center justify-between px-6 py-3 w-full max-w-[1440px] mx-auto">
+<div class="flex items-center gap-8">
+<span class="text-lg font-bold tracking-tighter text-slate-900 dark:text-slate-50 font-headline">Initial Dependency</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="font-sans antialiased text-sm font-medium tracking-tight text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 pb-1" href="#">Dashboard</a>
+<a class="font-sans antialiased text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200" href="#">Inventory</a>
+<a class="font-sans antialiased text-sm font-medium tracking-tight text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200" href="#">Reports</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-lg font-sans text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+                    Back to Scan
+                </button>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional user profile headshot with clean minimalist background and soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDz_1dF2KZSPpqbtCZ_4TUjqFDOvu1H-wPUCmULZw85aIJwwuREcqkBE47dAGPi-0NZQXLnb_0XfuZdhRIoszPUDnjKed313z5BOqDKkX_cmozTlO3-sVoB5UVrVN15pxQ_k9LgHFhZXKA3H8e0Hi-46loFfZkZumZbaX8dtZuaZUSXW5qDPdmqY897BYb1NOj-lD93Sst_1-dNoRMpqGaMZUiIOZn5ZqZ90ivACY2KWgsQbux8QtZ1yLLE-IwdsJtZ8Lq-ttrWNKiK"/>
+</div>
+</div>
+</nav>
+</header>
+<main class="min-h-[calc(100vh-140px)] flex flex-col items-center justify-center px-6 py-12">
+<!-- Hero Section -->
+<div class="text-center mb-12 max-w-2xl">
+<h1 class="text-5xl md:text-6xl font-extrabold tracking-tight text-on-surface mb-4 font-headline">
+                Initial Dependency
+            </h1>
+<p class="text-xl text-on-surface-variant leading-relaxed">
+                AI‑powered reachability analysis for your dependencies.
+            </p>
+</div>
+<!-- Central Upload Card -->
+<div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl p-8 shadow-sm ring-1 ring-outline-variant/10">
+<!-- File Dropzone -->
+<div class="group relative flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-outline-variant rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors duration-300 cursor-pointer mb-8">
+<div class="flex flex-col items-center justify-center pt-5 pb-6">
+<div class="w-16 h-16 mb-4 rounded-full bg-primary-fixed flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-3xl" data-weight="fill" style="font-variation-settings: 'FILL' 1;">upload_file</span>
+</div>
+<p class="mb-2 text-sm text-on-surface font-semibold">Click to upload or drag and drop</p>
+<p class="text-xs text-on-surface-variant font-mono">ZIP, TAR.GZ (MAX. 500MB)</p>
+</div>
+<input class="hidden" type="file"/>
+</div>
+<div class="relative flex items-center mb-8">
+<div class="flex-grow border-t border-outline-variant/30"></div>
+<span class="flex-shrink mx-4 text-xs font-label uppercase tracking-widest text-on-surface-variant">Or link your repository</span>
+<div class="flex-grow border-t border-outline-variant/30"></div>
+</div>
+<!-- Git URL Input -->
+<div class="space-y-4">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">link</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-4 bg-surface-container-high border-none rounded-lg text-on-surface placeholder:text-on-surface-variant focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all duration-200 font-mono text-sm" placeholder="https://github.com/username/repository" type="text"/>
+</div>
+<!-- Action Button -->
+<button class="w-full py-4 px-6 bg-gradient-primary text-on-primary font-semibold rounded-lg shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+                    Start Scan
+                </button>
+</div>
+</div>
+<!-- Description Section -->
+<section class="mt-16 max-w-3xl text-center">
+<div class="grid md:grid-cols-2 gap-12 text-left">
+<div class="space-y-3">
+<h3 class="text-xs font-label uppercase tracking-widest text-primary font-bold">Deep Context</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">
+                        Beyond simple vulnerability matching, we analyze the actual execution paths in your code to determine if a vulnerable dependency is truly reachable and exploitable.
+                    </p>
+</div>
+<div class="space-y-3">
+<h3 class="text-xs font-label uppercase tracking-widest text-primary font-bold">Smart Prioritization</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">
+                        Reduce security fatigue by filtering out 70% of noise. Focus your team on the "Initial Dependencies" that create genuine attack surfaces in your production environment.
+                    </p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-slate-200/10 bg-slate-50 dark:bg-slate-950">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 py-6 gap-4 max-w-[1440px] mx-auto">
+<span class="text-xs font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400">© 2024 Initial Dependency</span>
+<div class="flex items-center gap-8">
+<a class="text-xs font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-opacity duration-300" href="#">GitHub</a>
+<a class="text-xs font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-opacity duration-300" href="#">Documentation</a>
+<a class="text-xs font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-opacity duration-300" href="#">Privacy Policy</a>
+</div>
+</div>
+</footer>
+</body></html>

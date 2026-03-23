@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-container": "#b6ccff",
+              "secondary": "#495e8a",
+              "tertiary-container": "#b75b00",
+              "on-surface": "#191c1d",
+              "outline-variant": "#c2c6d6",
+              "error-container": "#ffdad6",
+              "inverse-on-surface": "#f0f1f2",
+              "tertiary": "#924700",
+              "on-surface-variant": "#424754",
+              "primary-container": "#2170e4",
+              "on-secondary": "#ffffff",
+              "surface-tint": "#005ac2",
+              "error": "#ba1a1a",
+              "outline": "#727785",
+              "primary": "#0058be",
+              "on-secondary-container": "#405682",
+              "surface-container-low": "#f3f4f5",
+              "primary-fixed-dim": "#adc6ff",
+              "on-primary-fixed-variant": "#004395",
+              "on-background": "#191c1d",
+              "tertiary-fixed": "#ffdcc6",
+              "surface": "#f8f9fa",
+              "on-secondary-fixed": "#001a42",
+              "on-tertiary-fixed-variant": "#723600",
+              "on-error-container": "#93000a",
+              "background": "#f8f9fa",
+              "on-primary-container": "#fefcff",
+              "inverse-primary": "#adc6ff",
+              "secondary-fixed-dim": "#b1c6f9",
+              "surface-bright": "#f8f9fa",
+              "on-error": "#ffffff",
+              "on-tertiary-container": "#fffbff",
+              "on-tertiary": "#ffffff",
+              "on-primary-fixed": "#001a42",
+              "tertiary-fixed-dim": "#ffb786",
+              "surface-dim": "#d9dadb",
+              "on-tertiary-fixed": "#311400",
+              "surface-variant": "#e1e3e4",
+              "secondary-fixed": "#d8e2ff",
+              "primary-fixed": "#d8e2ff",
+              "on-secondary-fixed-variant": "#304671",
+              "inverse-surface": "#2e3132",
+              "surface-container-lowest": "#ffffff",
+              "on-primary": "#ffffff",
+              "surface-container-high": "#e7e8e9",
+              "surface-container-highest": "#e1e3e4",
+              "surface-container": "#edeeef"
+            },
+            fontFamily: {
+              "headline": ["Inter", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"],
+              "mono": ["JetBrains Mono", "monospace"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-effect {
+        backdrop-filter: blur(12px);
+      }
+      .primary-gradient {
+        background: linear-gradient(135deg, #0058be 0%, #2170e4 100%);
+      }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 dark:bg-slate-900/50 flex flex-col p-4 font-sans Inter tracking-tight antialiased">
+<div class="mb-8 px-4">
+<h1 class="text-lg font-bold tracking-tighter text-slate-900 dark:text-slate-100">Initial Dependency</h1>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mt-1">Precision Architect</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="radar">radar</span>
+<span>Critical Reachability</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="gavel">gavel</span>
+<span>License Compliance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-blue-700 dark:text-blue-400 font-semibold bg-white dark:bg-slate-800 rounded-lg shadow-sm" href="#">
+<span class="material-symbols-outlined" data-icon="health_and_safety">health_and_safety</span>
+<span>Dependency Health</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800 space-y-1">
+<button class="w-full primary-gradient text-white py-2.5 rounded-lg text-sm font-semibold mb-6 shadow-md shadow-blue-500/20 active:opacity-80 transition-all scale-98">
+                Run New Analysis
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="text-sm">Docs</span>
+</a>
+<div class="flex items-center gap-3 px-4 py-4 mt-2">
+<div class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Developer Profile" data-alt="professional portrait of a software engineer in a neutral studio environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnvyJXTu1_mc_Ouh2TBpJ-b2UsV8qbSQCjvOkzaV5NrYZPb5WQcF1GFEASwMi9sdDzJp5hmXQudtQhs6gGOLtVRkCWkQVuC8kK3NdUz2OweD3RYzjbZVagpXl6L5sb-4cRmBTV-CTBeUyq7ovAXt3V3HiFeNMbqhN9Vfmpyh-5QT8yqQHbRhlbRYDR1E2roFvPk4O9SIeVSVw-K-QY-6z9LRofOP5muuhTvfsdQVc4y8I0g0mfUsRTbA21vOloHZv8kA3XscRvkh52"/>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-slate-900">Arch. J. Doe</span>
+<span class="text-[10px] text-slate-500 uppercase tracking-tighter">Admin Access</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 left-64 h-16 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex justify-between items-center px-8">
+<div class="flex items-center gap-8 h-full">
+<h2 class="text-xl font-black text-slate-900 dark:text-slate-50 tracking-tighter">Dependency Health</h2>
+<nav class="hidden md:flex h-full items-center gap-6 font-sans Inter text-sm font-medium">
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors pb-5 border-b-2 border-transparent" href="#">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors pb-5 border-b-2 border-transparent" href="#">Reports</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors pb-5 border-b-2 border-transparent" href="#">Vulnerabilities</a>
+<a class="text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 pb-5" href="#">Inventory</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-lg">search</span>
+<input class="pl-10 pr-4 py-1.5 bg-surface-container-highest border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-primary/20" placeholder="Scan projects..." type="text"/>
+</div>
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<div class="pt-24 px-8 pb-12">
+<!-- Summary Tiles Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-none flex flex-col gap-1 group hover:bg-surface-bright transition-all">
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Outdated Packages</span>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-black tracking-tight text-on-surface">14</span>
+<span class="text-error text-xs font-semibold flex items-center">
+<span class="material-symbols-outlined text-sm">trending_up</span> 12%
+                        </span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-error" style="width: 35%"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-none flex flex-col gap-1 group hover:bg-surface-bright transition-all">
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Abandoned Projects</span>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-black tracking-tight text-on-surface">3</span>
+<span class="text-slate-400 text-xs font-semibold">Critical Risk</span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 15%"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border-none flex flex-col gap-1 group hover:bg-surface-bright transition-all">
+<span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Avg. Update Delay</span>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-black tracking-tight text-on-surface">42</span>
+<span class="text-slate-500 text-xs font-medium">Days behind</span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary" style="width: 65%"></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+<!-- Dependency List (Main Column) -->
+<div class="lg:col-span-8 space-y-6">
+<div class="flex justify-between items-end mb-4 px-2">
+<h3 class="text-lg font-bold tracking-tight">Active Dependencies</h3>
+<div class="flex gap-2">
+<button class="text-xs font-bold text-slate-500 hover:text-primary uppercase tracking-tighter px-3 py-1 rounded bg-surface-container">All</button>
+<button class="text-xs font-bold text-slate-400 hover:text-primary uppercase tracking-tighter px-3 py-1">Production</button>
+<button class="text-xs font-bold text-slate-400 hover:text-primary uppercase tracking-tighter px-3 py-1">Dev</button>
+</div>
+</div>
+<!-- List Header -->
+<div class="grid grid-cols-12 px-6 text-[10px] uppercase font-bold tracking-widest text-slate-400 mb-2">
+<div class="col-span-4">Package Identity</div>
+<div class="col-span-2 text-center">Version Status</div>
+<div class="col-span-3 text-center">Maintenance Score</div>
+<div class="col-span-3 text-right">Activity</div>
+</div>
+<!-- Dependency Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl hover:bg-surface-bright transition-all flex flex-col gap-4">
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-4 flex flex-col">
+<span class="text-sm font-bold text-on-surface">react-query</span>
+<span class="text-xs font-mono text-slate-400">v5.12.0</span>
+</div>
+<div class="col-span-2 flex flex-col items-center">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold">STABLE</span>
+<span class="text-[10px] text-slate-400 mt-1">Latest: 5.12.0</span>
+</div>
+<div class="col-span-3 px-4">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold text-on-surface">98/100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full">
+<div class="h-full bg-primary rounded-full" style="width: 98%"></div>
+</div>
+</div>
+<div class="col-span-3 text-right flex flex-col">
+<span class="text-xs font-medium text-slate-900">2 days ago</span>
+<span class="text-[10px] text-slate-400">Last Commit</span>
+</div>
+</div>
+</div>
+<!-- Dependency Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl hover:bg-surface-bright transition-all flex flex-col gap-4">
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-4 flex flex-col">
+<span class="text-sm font-bold text-on-surface">lodash-es</span>
+<span class="text-xs font-mono text-slate-400">v4.17.21</span>
+</div>
+<div class="col-span-2 flex flex-col items-center">
+<span class="px-2 py-0.5 rounded-full bg-error-container text-on-error-container text-[10px] font-bold">OUTDATED</span>
+<span class="text-[10px] text-error font-semibold mt-1">Latest: 4.18.0</span>
+</div>
+<div class="col-span-3 px-4">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold text-on-surface">42/100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full">
+<div class="h-full bg-tertiary rounded-full" style="width: 42%"></div>
+</div>
+</div>
+<div class="col-span-3 text-right flex flex-col">
+<span class="text-xs font-medium text-slate-900">8 months ago</span>
+<span class="text-[10px] text-slate-400">Last Commit</span>
+</div>
+</div>
+</div>
+<!-- Dependency Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl hover:bg-surface-bright transition-all flex flex-col gap-4">
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-4 flex flex-col">
+<span class="text-sm font-bold text-on-surface">old-legacy-ui</span>
+<span class="text-xs font-mono text-slate-400">v1.0.4</span>
+</div>
+<div class="col-span-2 flex flex-col items-center">
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-slate-500 text-[10px] font-bold">ABANDONED</span>
+<span class="text-[10px] text-slate-400 mt-1">N/A</span>
+</div>
+<div class="col-span-3 px-4">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold text-error">12/100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full">
+<div class="h-full bg-error rounded-full" style="width: 12%"></div>
+</div>
+</div>
+<div class="col-span-3 text-right flex flex-col">
+<span class="text-xs font-medium text-error">3 years ago</span>
+<span class="text-[10px] text-slate-400">Last Commit</span>
+</div>
+</div>
+</div>
+<!-- Dependency Card 4 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl hover:bg-surface-bright transition-all flex flex-col gap-4">
+<div class="grid grid-cols-12 items-center">
+<div class="col-span-4 flex flex-col">
+<span class="text-sm font-bold text-on-surface">tailwindcss</span>
+<span class="text-xs font-mono text-slate-400">v3.4.1</span>
+</div>
+<div class="col-span-2 flex flex-col items-center">
+<span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-bold">STABLE</span>
+<span class="text-[10px] text-slate-400 mt-1">Latest: 3.4.1</span>
+</div>
+<div class="col-span-3 px-4">
+<div class="flex justify-between items-center mb-1">
+<span class="text-[10px] font-bold text-on-surface">100/100</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container rounded-full">
+<div class="h-full bg-primary rounded-full" style="width: 100%"></div>
+</div>
+</div>
+<div class="col-span-3 text-right flex flex-col">
+<span class="text-xs font-medium text-slate-900">Today</span>
+<span class="text-[10px] text-slate-400">Last Commit</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recommendations (Asymmetric Side Column) -->
+<div class="lg:col-span-4 space-y-8">
+<div class="p-8 bg-primary-container text-on-primary-container rounded-2xl relative overflow-hidden group">
+<div class="relative z-10">
+<h4 class="text-lg font-bold mb-2">Priority Resolution</h4>
+<p class="text-sm opacity-80 mb-6 leading-relaxed">System architecture recommends immediate replacement of legacy UI components detected in sub-modules.</p>
+<button class="bg-white text-primary px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-opacity-90 transition-all">View Patch Plan</button>
+</div>
+<div class="absolute -right-8 -bottom-8 opacity-10 group-hover:scale-110 transition-transform duration-700">
+<span class="material-symbols-outlined text-[160px]" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+</div>
+<div class="space-y-4">
+<h4 class="text-xs font-black uppercase tracking-widest text-slate-400 px-2">Key Recommendations</h4>
+<div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant/10">
+<div class="flex items-start gap-4">
+<div class="p-2 bg-error-container text-error rounded-lg">
+<span class="material-symbols-outlined text-lg">swap_horizontal_circle</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-on-surface">Replace old-legacy-ui</span>
+<p class="text-[11px] text-on-surface-variant mt-1">Package is unmaintained. Transition to <strong>@modern/core-ui</strong> recommended for security compliance.</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant/10">
+<div class="flex items-start gap-4">
+<div class="p-2 bg-tertiary-container text-white rounded-lg">
+<span class="material-symbols-outlined text-lg">update</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-on-surface">Upgrade lodash-es</span>
+<p class="text-[11px] text-on-surface-variant mt-1">Minor version mismatch detected. Upgrade to v4.18.0 to resolve 2 non-critical vulnerabilities.</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-5 rounded-xl border border-outline-variant/10">
+<div class="flex items-start gap-4">
+<div class="p-2 bg-secondary-container text-on-secondary-container rounded-lg">
+<span class="material-symbols-outlined text-lg">shield_with_heart</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-on-surface">Lock Dependencies</span>
+<p class="text-[11px] text-on-surface-variant mt-1">Enable strict lockfile integrity to prevent supply chain poisoning in CI pipelines.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm">
+<img alt="Tech Background" class="w-full h-40 object-cover opacity-80" data-alt="extreme close up of electronic circuit board with neon blue light pulses representing data flow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgNy47_EM3IfzkrfC3bhF0nB7F-JbcbD8RdpMoNVcPRDRn_HDseWk6tRfFMMTjV5qH9dtYb7DQyN7uzQU_-SwUTuVJwNrxzuK2kvLSVlmtT6jXyC3qkzZn7qJ2_BZ4YviYydmHSmePFAgAd-nCyaNT7M38tLN9u4rQyWKhY01SSmca4jSk_Dt6jGD4NjP0saaZaYt5Iby4Xfp2Ky6OLAILhsq2r3TuDfUYvjN_qTZAm8I67X7P2JpFe7V8Xf96OBT4OcDDgFWKKbYT"/>
+<div class="p-6">
+<span class="text-[10px] font-black uppercase text-primary tracking-widest">Architect Insight</span>
+<p class="text-xs font-medium mt-2 leading-relaxed">"Dependency health is the foundation of structural integrity. 80% of vulnerabilities originate from third-party code."</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB Suppression: Contextual Floating Action Buttons are suppressed on health/details screens as per guidelines -->
+</body></html>

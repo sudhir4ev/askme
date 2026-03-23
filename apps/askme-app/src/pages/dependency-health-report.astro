@@ -1,0 +1,132 @@
+---
+import FilterBar from "../components/composite/FilterBar.astro";
+import RecommendationsPanel from "../components/composite/RecommendationsPanel.astro";
+import AppShell from "../components/layout/AppShell.astro";
+import FooterBar from "../components/layout/FooterBar.astro";
+import PageHeader from "../components/layout/PageHeader.astro";
+import SidebarNav from "../components/layout/SidebarNav.astro";
+import TopNav from "../components/layout/TopNav.astro";
+import DependencyHealthRow from "../components/domain/DependencyHealthRow.astro";
+import StatTile from "../components/domain/StatTile.astro";
+import Layout from "../layouts/Layout.astro";
+
+const sideItems = [
+	{ key: "critical", label: "Critical Reachability", icon: "radar", href: "/critical-reachability-report" },
+	{ key: "license", label: "License Compliance", icon: "gavel", href: "/license-compliance-report" },
+	{ key: "health", label: "Dependency Health", icon: "health_and_safety", href: "/dependency-health-report" },
+];
+
+const rows = [
+	{ name: "react-query", version: "v5.12.0", status: "stable", latest: "5.12.0", score: 98, activity: "2 days ago" },
+	{ name: "lodash-es", version: "v4.17.21", status: "outdated", latest: "4.18.0", score: 42, activity: "8 months ago" },
+	{ name: "old-legacy-ui", version: "v1.0.4", status: "abandoned", latest: "N/A", score: 12, activity: "3 years ago" },
+	{ name: "tailwindcss", version: "v3.4.1", status: "stable", latest: "3.4.1", score: 100, activity: "Today" },
+];
+---
+
+<Layout title="Dependency Health Report">
+	<AppShell withSidebar={true} withTopbar={true} withFooter={true}>
+		<Fragment slot="sidebar">
+			<SidebarNav brand="Initial Dependency" subtitle="Precision Architect" items={sideItems} active="health" />
+		</Fragment>
+		<Fragment slot="topbar">
+			<TopNav
+				links={[
+					{ key: "dashboard", label: "Dashboard" },
+					{ key: "reports", label: "Reports" },
+					{ key: "inventory", label: "Inventory" },
+				]}
+				active="inventory"
+				searchPlaceholder="Scan projects..."
+			/>
+		</Fragment>
+
+		<PageHeader title="Dependency Health" subtitle="Package maintenance and freshness across active dependencies." />
+
+		<section class="metrics">
+			<StatTile label="Outdated Packages" value="14" hint="12%" progress={35} tone="critical" />
+			<StatTile label="Abandoned Projects" value="3" hint="Critical risk" progress={15} tone="high" />
+			<StatTile label="Avg. Update Delay" value="42" hint="Days behind" progress={65} tone="medium" />
+		</section>
+
+		<FilterBar
+			tabItems={[
+				{ key: "all", label: "All" },
+				{ key: "prod", label: "Production" },
+				{ key: "dev", label: "Dev" },
+			]}
+			activeTab="all"
+			searchPlaceholder="Search packages..."
+		/>
+
+		<section class="body-grid">
+			<div class="list">
+				{
+					rows.map((row) => (
+						<DependencyHealthRow
+							name={row.name}
+							version={row.version}
+							status={row.status as "stable" | "outdated" | "abandoned"}
+							latest={row.latest}
+							score={row.score}
+							activity={row.activity}
+						/>
+					))
+				}
+			</div>
+			<RecommendationsPanel
+				title="Priority Resolution"
+				summary="System architecture recommends immediate replacement of legacy UI components detected in sub-modules."
+				items={[
+					{
+						icon: "swap_horizontal_circle",
+						title: "Replace old-legacy-ui",
+						body: "Transition to @modern/core-ui for long-term maintenance and security posture.",
+					},
+					{
+						icon: "update",
+						title: "Upgrade lodash-es",
+						body: "Upgrade to v4.18.0 to resolve known non-critical vulnerabilities.",
+					},
+					{
+						icon: "shield_with_heart",
+						title: "Lock Dependencies",
+						body: "Enable strict lockfile integrity checks in CI to prevent supply-chain poisoning.",
+					},
+				]}
+			/>
+		</section>
+
+		<Fragment slot="footer">
+			<FooterBar links={[{ label: "GitHub" }, { label: "Documentation" }, { label: "Privacy Policy" }]} />
+		</Fragment>
+	</AppShell>
+</Layout>
+
+<style>
+	.metrics {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.7rem;
+		margin-bottom: 1rem;
+	}
+
+	.body-grid {
+		display: grid;
+		grid-template-columns: 2fr 1fr;
+		gap: 1rem;
+		margin-top: 1rem;
+	}
+
+	.list {
+		display: grid;
+		gap: 0.7rem;
+	}
+
+	@media (max-width: 1100px) {
+		.metrics,
+		.body-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

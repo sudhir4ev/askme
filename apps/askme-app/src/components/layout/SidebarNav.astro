@@ -1,0 +1,121 @@
+---
+import Button from "../ui/Button.astro";
+import Avatar from "../ui/Avatar.astro";
+
+interface NavItem {
+	key: string;
+	label: string;
+	icon: string;
+	href?: string;
+}
+
+interface Props {
+	brand: string;
+	subtitle?: string;
+	items: NavItem[];
+	active: string;
+}
+
+const { brand, subtitle, items, active } = Astro.props;
+---
+
+<div class="sidebar">
+	<div class="brand">
+		<h1>{brand}</h1>
+		{subtitle && <p>{subtitle}</p>}
+	</div>
+
+	<nav class="menu">
+		{
+			items.map((item) => (
+				<a class:list={["menu-item", item.key === active && "menu-item--active"]} href={item.href ?? "#"}>
+					<span class="material-symbols-outlined">{item.icon}</span>
+					<span>{item.label}</span>
+				</a>
+			))
+		}
+	</nav>
+
+	<div class="footer">
+		<Button variant="gradient" fullWidth={true}>Run New Analysis</Button>
+		<div class="user">
+			<Avatar initials="JD" />
+			<div>
+				<strong>Arch. J. Doe</strong>
+				<small>Admin Access</small>
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.sidebar {
+		height: 100%;
+		background: #f8fafc;
+		border-right: 1px solid var(--color-border);
+		padding: 1rem;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.brand h1 {
+		margin: 0;
+		font-size: 1.05rem;
+	}
+
+	.brand p {
+		margin: 0.3rem 0 0;
+		font-size: 0.67rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--color-muted);
+	}
+
+	.menu {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+		margin-top: 1.3rem;
+	}
+
+	.menu-item {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		padding: 0.65rem 0.7rem;
+		border-radius: var(--radius-md);
+		color: var(--color-text-secondary);
+		font-size: 0.88rem;
+	}
+
+	.menu-item--active {
+		background: white;
+		color: #1d4ed8;
+		border: 1px solid var(--color-border);
+	}
+
+	.footer {
+		margin-top: auto;
+		padding-top: 1rem;
+		border-top: 1px solid var(--color-border);
+	}
+
+	.user {
+		display: flex;
+		align-items: center;
+		gap: 0.55rem;
+		margin-top: 1rem;
+	}
+
+	.user strong {
+		font-size: 0.75rem;
+		display: block;
+	}
+
+	.user small {
+		font-size: 0.62rem;
+		color: var(--color-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+</style>

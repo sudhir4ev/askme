@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Critical Reachability - Initial Dependency</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "secondary-fixed-dim": "#b1c6f9",
+              "surface-bright": "#f8f9fa",
+              "on-secondary-fixed-variant": "#304671",
+              "secondary-fixed": "#d8e2ff",
+              "surface-container-low": "#f3f4f5",
+              "on-secondary-fixed": "#001a42",
+              "error": "#ba1a1a",
+              "surface-dim": "#d9dadb",
+              "on-primary": "#ffffff",
+              "outline-variant": "#c2c6d6",
+              "inverse-surface": "#2e3132",
+              "primary-container": "#2170e4",
+              "on-tertiary-container": "#fffbff",
+              "primary": "#0058be",
+              "inverse-primary": "#adc6ff",
+              "on-tertiary-fixed": "#311400",
+              "on-secondary": "#ffffff",
+              "on-error": "#ffffff",
+              "surface-container-highest": "#e1e3e4",
+              "tertiary-container": "#b75b00",
+              "surface-tint": "#005ac2",
+              "on-primary-fixed": "#001a42",
+              "primary-fixed": "#d8e2ff",
+              "on-error-container": "#93000a",
+              "surface-container-high": "#e7e8e9",
+              "on-primary-fixed-variant": "#004395",
+              "outline": "#727785",
+              "surface-variant": "#e1e3e4",
+              "primary-fixed-dim": "#adc6ff",
+              "on-tertiary-fixed-variant": "#723600",
+              "secondary-container": "#b6ccff",
+              "on-secondary-container": "#405682",
+              "tertiary": "#924700",
+              "surface-container": "#edeeef",
+              "tertiary-fixed": "#ffdcc6",
+              "on-primary-container": "#fefcff",
+              "surface-container-lowest": "#ffffff",
+              "on-surface": "#191c1d",
+              "secondary": "#495e8a",
+              "tertiary-fixed-dim": "#ffb786",
+              "inverse-on-surface": "#f0f1f2",
+              "on-tertiary": "#ffffff",
+              "on-background": "#191c1d",
+              "surface": "#f8f9fa",
+              "error-container": "#ffdad6",
+              "background": "#f8f9fa",
+              "on-surface-variant": "#424754"
+            },
+            fontFamily: {
+              "headline": ["Inter", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"],
+              "mono": ["JetBrains Mono", "monospace"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .primary-gradient {
+            background: linear-gradient(135deg, #0058be 0%, #2170e4 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed antialiased">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 dark:bg-slate-900/50 flex flex-col p-4 z-50 font-sans tracking-tight border-r border-slate-200 dark:border-slate-800">
+<div class="mb-8 px-4">
+<h1 class="text-lg font-bold tracking-tighter text-slate-900 dark:text-slate-100">Initial Dependency</h1>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-semibold mt-1">Precision Architect</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-blue-700 dark:text-blue-400 font-semibold bg-white dark:bg-slate-800 rounded-lg shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">radar</span>
+<span class="text-sm font-medium">Critical Reachability</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">gavel</span>
+<span class="text-sm font-medium">License Compliance</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-700/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">health_and_safety</span>
+<span class="text-sm font-medium">Dependency Health</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+<button class="w-full mb-4 primary-gradient text-white py-2.5 rounded text-sm font-semibold shadow-md active:opacity-80 transition-all">
+            Run New Analysis
+        </button>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-slate-900 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="text-sm font-medium">Docs</span>
+</a>
+<div class="flex items-center gap-3 px-4 py-4 mt-2">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-slate-200">
+<img alt="User Profile" data-alt="professional headshot of a software engineer in a modern office environment with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD0Bs8aXYDOsvuHLRHryXak35eU0PLlXnZOgABxk1WrInQl1zekfeMy3FIJ_z0qKk5uLYXS1tR8n8klXPjnzUUhmO2agrY2GXc7SR9AXfD9cvMbcmwehJA0EtUscgR_JPQTN0MMo5KDawYDEiMD2hs5re5bi9I8HXxodmHWYy_r4H8MGZ2BQGiuYhA8MMA8dPlkO-O_--yOGpqxBwLlvY0YaziV9ElRAQ9_Ua8MX8MdUNW_76iyAD0L6bTMHc0TFPOns3mhxi3EhTL"/>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold text-slate-900 dark:text-slate-100">Arch. J. Doe</span>
+<span class="text-[10px] text-slate-500 uppercase tracking-tighter">Admin Access</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-64 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-40 flex justify-between items-center px-8 shadow-sm dark:shadow-none">
+<div class="flex items-center gap-8">
+<nav class="flex gap-6 text-sm font-medium font-sans antialiased">
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors" href="#">Dashboard</a>
+<a class="text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 pb-5" href="#">Inventory</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-500 transition-colors" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-primary text-on-primary px-4 py-2 rounded font-medium text-sm active:scale-95 transition-transform hover:opacity-90">
+            Back to Scan
+        </button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="User Profile" data-alt="professional headshot of a software engineer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDD0Bs8aXYDOsvuHLRHryXak35eU0PLlXnZOgABxk1WrInQl1zekfeMy3FIJ_z0qKk5uLYXS1tR8n8klXPjnzUUhmO2agrY2GXc7SR9AXfD9cvMbcmwehJA0EtUscgR_JPQTN0MMo5KDawYDEiMD2hs5re5bi9I8HXxodmHWYy_r4H8MGZ2BQGiuYhA8MMA8dPlkO-O_--yOGpqxBwLlvY0YaziV9ElRAQ9_Ua8MX8MdUNW_76iyAD0L6bTMHc0TFPOns3mhxi3EhTL"/>
+</div>
+</div>
+</header>
+<main class="ml-64 pt-16 min-h-screen">
+<div class="max-w-[1440px] mx-auto px-8 py-10">
+<!-- Results Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+<div>
+<h1 class="text-3xl font-extrabold tracking-tight text-on-surface mb-2">Dependency-Core-V1</h1>
+<p class="text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                    Scanned 4 minutes ago • Source: main branch
+                </p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 bg-surface-container-high text-on-surface px-4 py-2.5 rounded hover:bg-surface-container-highest transition-colors font-medium text-sm">
+<span class="material-symbols-outlined text-lg">download</span>
+                    Download Report
+                </button>
+</div>
+</div>
+<!-- Bento Grid Summary Section -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded shadow-sm hover:translate-y-[-2px] transition-transform">
+<p class="text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant mb-4">Total Dependencies</p>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-extrabold tracking-tight">142</span>
+<span class="text-xs text-on-surface-variant font-mono text-emerald-600">+12 from last scan</span>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded shadow-sm hover:translate-y-[-2px] transition-transform">
+<p class="text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant mb-4">Vulnerabilities Detected</p>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-extrabold tracking-tight">12</span>
+<span class="text-xs text-on-surface-variant font-mono">3 critical, 9 high</span>
+</div>
+</div>
+<!-- Stat Card 3: Reachable (Critical) -->
+<div class="bg-error-container/40 p-6 rounded shadow-sm border border-error/5 hover:translate-y-[-2px] transition-transform">
+<p class="text-[0.6875rem] font-bold uppercase tracking-widest text-on-error-container mb-4">Reachable Risks</p>
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-extrabold tracking-tight text-error">4</span>
+<span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+</div>
+<!-- Stat Card 4: Overall Status -->
+<div class="bg-error p-6 rounded shadow-sm hover:translate-y-[-2px] transition-transform text-white">
+<p class="text-[0.6875rem] font-bold uppercase tracking-widest text-white/70 mb-2">Security Posture</p>
+<p class="text-xl font-bold leading-tight">Critical reachable vulnerabilities found</p>
+<div class="mt-4 flex items-center gap-2 text-sm text-white/90">
+<span class="material-symbols-outlined text-sm">info</span>
+                    Immediate action required
+                </div>
+</div>
+</div>
+<!-- Filter Bar -->
+<div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+<div class="flex items-center gap-2 p-1 bg-surface-container-low rounded w-full md:w-auto">
+<button class="px-4 py-1.5 rounded bg-surface-container-lowest shadow-sm text-sm font-semibold">Reachable</button>
+<button class="px-4 py-1.5 rounded text-sm font-medium text-on-surface-variant hover:bg-surface-container-high transition-colors">All</button>
+</div>
+<div class="flex items-center gap-4 w-full md:w-auto overflow-x-auto no-scrollbar pb-2 md:pb-0">
+<div class="relative group min-w-[240px]">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-lg">search</span>
+<input class="w-full bg-surface-container-highest/50 border-none rounded py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all" placeholder="Search libraries..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 bg-error-container text-on-error-container text-xs font-bold rounded-full border border-error/10">Critical</button>
+<button class="px-3 py-1.5 bg-surface-container-high text-on-surface-variant text-xs font-bold rounded-full hover:bg-tertiary-container hover:text-white transition-colors">High</button>
+<button class="px-3 py-1.5 bg-surface-container-high text-on-surface-variant text-xs font-bold rounded-full hover:bg-secondary-container hover:text-on-secondary-container transition-colors">Medium</button>
+</div>
+</div>
+</div>
+<!-- Vulnerability List -->
+<div class="space-y-4">
+<!-- Item 1 (Expanded) -->
+<div class="group bg-surface-container-lowest rounded overflow-hidden shadow-sm transition-all duration-300">
+<div class="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-surface-bright">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-error text-2xl" style="font-variation-settings: 'FILL' 1;">error</span>
+<div>
+<div class="flex items-center gap-3">
+<h3 class="mono text-lg font-bold">lodash</h3>
+<span class="text-on-surface-variant text-sm mono">v4.17.20</span>
+</div>
+<div class="flex gap-2 mt-1">
+<span class="bg-error-container text-on-error-container text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">Critical</span>
+<span class="bg-primary/10 text-primary text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">sensors</span> Reachable
+                                </span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant text-sm font-mono">CVE-2020-8203</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-y-1 transition-transform">keyboard_arrow_down</span>
+</div>
+</div>
+<!-- Expanded Content -->
+<div class="px-5 pb-6 border-t border-surface-container">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+<div>
+<p class="text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant mb-3">Vulnerability Description</p>
+<p class="text-on-surface leading-relaxed text-sm mb-6">
+                                Prototype pollution vulnerability in lodash before 4.17.21 allows attackers to cause a denial of service (application crash) or potentially execute arbitrary code via a crafted payload that exploits the <code>_.merge</code> function.
+                            </p>
+<p class="text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant mb-3">Remediation Suggestion</p>
+<div class="bg-secondary-container/20 p-4 rounded border border-secondary/10">
+<p class="text-sm font-medium text-secondary flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-sm">auto_fix_high</span> Recommended Action
+                                </p>
+<p class="text-sm text-on-secondary-container">Upgrade <span class="mono font-bold">lodash</span> to version <span class="mono font-bold">4.17.21</span> or higher.</p>
+</div>
+</div>
+<div>
+<p class="text-[0.6875rem] font-bold uppercase tracking-widest text-on-surface-variant mb-3">Reachability Proof</p>
+<div class="bg-surface-container-high rounded p-4 font-mono text-[13px] text-on-surface overflow-x-auto">
+<div class="flex justify-between text-[10px] uppercase text-on-surface-variant mb-2 pb-2 border-b border-surface-container-highest">
+<span>src/utils/data-parser.ts</span>
+<span>Line 142</span>
+</div>
+<div class="space-y-1">
+<div class="flex gap-4 text-on-surface-variant/50"><span>140</span><span>const config = {};</span></div>
+<div class="flex gap-4 text-on-surface-variant/50"><span>141</span><span>const payload = req.body.data;</span></div>
+<div class="flex gap-4 bg-error/10 -mx-4 px-4 border-l-2 border-error text-on-surface"><span>142</span><span class="font-bold">_.merge(config, payload);</span></div>
+<div class="flex gap-4 text-on-surface-variant/50"><span>143</span><span>return config;</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="group bg-surface-container-lowest rounded overflow-hidden shadow-sm transition-all duration-300">
+<div class="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-surface-bright">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-tertiary text-2xl" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div>
+<div class="flex items-center gap-3">
+<h3 class="mono text-lg font-bold">axios</h3>
+<span class="text-on-surface-variant text-sm mono">v0.21.1</span>
+</div>
+<div class="flex gap-2 mt-1">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">High</span>
+<span class="bg-primary/10 text-primary text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">sensors</span> Reachable
+                                </span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant text-sm font-mono">CVE-2021-3749</span>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:translate-y-1 transition-transform">keyboard_arrow_down</span>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="group bg-surface-container-lowest rounded overflow-hidden shadow-sm transition-all duration-300">
+<div class="p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer hover:bg-surface-bright opacity-80">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant text-2xl">check_circle</span>
+<div>
+<div class="flex items-center gap-3">
+<h3 class="mono text-lg font-bold">moment</h3>
+<span class="text-on-surface-variant text-sm mono">v2.29.1</span>
+</div>
+<div class="flex gap-2 mt-1">
+<span class="bg-secondary-fixed text-on-secondary-fixed text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">Medium</span>
+<span class="bg-surface-container-high text-on-surface-variant text-[10px] font-extrabold px-2 py-0.5 rounded uppercase tracking-wider">Not Reachable</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant text-sm font-mono">CVE-2022-24785</span>
+<span class="material-symbols-outlined text-on-surface-variant">keyboard_arrow_down</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pagination/Footer Actions -->
+<div class="mt-8 flex justify-center">
+<button class="px-6 py-2 border border-outline-variant text-on-surface-variant font-medium text-sm rounded hover:bg-surface-container-low transition-colors">
+                Load More Results
+            </button>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-slate-200/10 bg-slate-50 dark:bg-slate-950 ml-64 max-w-[calc(100%-16rem)]">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 py-6 gap-4 max-w-[1440px] mx-auto">
+<div class="flex items-center gap-6">
+<span class="text-xs font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400">© 2024 Initial Dependency</span>
+</div>
+<div class="flex items-center gap-8">
+<a class="text-xs font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-opacity duration-300" href="#">GitHub</a>
+<a class="text-xs font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-opacity duration-300" href="#">Documentation</a>
+<a class="text-xs font-mono uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-opacity duration-300" href="#">Privacy Policy</a>
+</div>
+</div>
+</footer>
+<!-- FAB for quick action (Export) - High context -->
+<button class="fixed bottom-8 right-8 bg-primary-container text-on-primary-container p-4 rounded-full shadow-lg hover:shadow-xl active:scale-95 transition-all group flex items-center gap-2 z-50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">ios_share</span>
+<span class="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold whitespace-nowrap text-sm px-0 group-hover:px-2">Download Report</span>
+</button>
+</body></html>

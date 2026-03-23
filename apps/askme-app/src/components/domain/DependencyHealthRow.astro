@@ -1,0 +1,70 @@
+---
+import Badge from "../ui/Badge.astro";
+import Card from "../ui/Card.astro";
+import ProgressBar from "../ui/ProgressBar.astro";
+
+interface Props {
+	name: string;
+	version: string;
+	status: "stable" | "outdated" | "abandoned";
+	latest: string;
+	score: number;
+	activity: string;
+}
+
+const { name, version, status, latest, score, activity } = Astro.props;
+const statusTone = status === "stable" ? "success" : status === "outdated" ? "high" : "muted";
+const scoreTone = score > 85 ? "success" : score > 50 ? "medium" : "critical";
+---
+
+<Card variant="interactive" padding="md">
+	<div class="row">
+		<div>
+			<strong>{name}</strong>
+			<small class="mono">{version}</small>
+		</div>
+		<div class="center">
+			<Badge tone={statusTone}>{status}</Badge>
+			<small>Latest: {latest}</small>
+		</div>
+		<div>
+			<small class="mono">{score}/100</small>
+			<ProgressBar value={score} tone={scoreTone} />
+		</div>
+		<div>
+			<strong>{activity}</strong>
+			<small>Last Commit</small>
+		</div>
+	</div>
+</Card>
+
+<style>
+	.row {
+		display: grid;
+		grid-template-columns: 2fr 1.5fr 1.5fr 1fr;
+		gap: 1rem;
+		align-items: center;
+	}
+
+	strong {
+		display: block;
+	}
+
+	small {
+		color: var(--color-text-secondary);
+		font-size: 0.72rem;
+	}
+
+	.center {
+		text-align: center;
+	}
+
+	@media (max-width: 960px) {
+		.row {
+			grid-template-columns: 1fr;
+		}
+		.center {
+			text-align: left;
+		}
+	}
+</style>
