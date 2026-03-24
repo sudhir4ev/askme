@@ -1,17 +1,23 @@
 {
-  "name": "my-turborepo",
+  "name": "askme",
   "private": true,
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "dev:server": "turbo run dev --filter=askme-server",
+    "dev:app": "turbo run dev --filter=askme-app",
+    "test": "turbo run test",
     "lint": "turbo run lint",
+    "ts-node": "ts-node",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
     "prettier": "^3.7.4",
     "turbo": "^2.8.20",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "vite": "^8.0.2",
+    "vitest": "^4.1.1"
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
