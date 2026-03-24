@@ -1,20 +1,9 @@
 ---
 import FilterBar from "../components/composite/FilterBar.astro";
 import RecommendationsPanel from "../components/composite/RecommendationsPanel.astro";
-import AppShell from "../components/layout/AppShell.astro";
-import FooterBar from "../components/layout/FooterBar.astro";
-import PageHeader from "../components/layout/PageHeader.astro";
-import SidebarNav from "../components/layout/SidebarNav.astro";
-import TopNav from "../components/layout/TopNav.astro";
+import ReportPageLayout from "../components/layout/ReportPageLayout.astro";
 import DependencyHealthRow from "../components/domain/DependencyHealthRow.astro";
 import StatTile from "../components/domain/StatTile.astro";
-import Layout from "../layouts/Layout.astro";
-
-const sideItems = [
-	{ key: "critical", label: "Critical Reachability", icon: "radar", href: "/critical-reachability-report" },
-	{ key: "license", label: "License Compliance", icon: "gavel", href: "/license-compliance-report" },
-	{ key: "health", label: "Dependency Health", icon: "health_and_safety", href: "/dependency-health-report" },
-];
 
 const rows = [
 	{ name: "react-query", version: "v5.12.0", status: "stable", latest: "5.12.0", score: 98, activity: "2 days ago" },
@@ -24,81 +13,65 @@ const rows = [
 ];
 ---
 
-<Layout title="Dependency Health Report">
-	<AppShell withSidebar={true} withTopbar={true} withFooter={true}>
-		<Fragment slot="sidebar">
-			<SidebarNav brand="Initial Dependency" subtitle="Precision Architect" items={sideItems} active="health" />
-		</Fragment>
-		<Fragment slot="topbar">
-			<TopNav
-				links={[
-					{ key: "dashboard", label: "Dashboard" },
-					{ key: "reports", label: "Reports" },
-					{ key: "inventory", label: "Inventory" },
-				]}
-				active="inventory"
-				searchPlaceholder="Scan projects..."
-			/>
-		</Fragment>
+<ReportPageLayout
+	pageTitle="Dependency Health Report"
+	headerTitle="Dependency Health"
+	headerSubtitle="Package maintenance and freshness across active dependencies."
+	sidebarActive="health"
+	topActive="inventory"
+	topSearchPlaceholder="Scan projects..."
+>
+	<section class="mb-4 grid grid-cols-1 gap-3 xl:grid-cols-3">
+		<StatTile label="Outdated Packages" value="14" hint="12%" progress={35} tone="critical" />
+		<StatTile label="Abandoned Projects" value="3" hint="Critical risk" progress={15} tone="high" />
+		<StatTile label="Avg. Update Delay" value="42" hint="Days behind" progress={65} tone="medium" />
+	</section>
 
-		<PageHeader title="Dependency Health" subtitle="Package maintenance and freshness across active dependencies." />
+	<FilterBar
+		tabItems={[
+			{ key: "all", label: "All" },
+			{ key: "prod", label: "Production" },
+			{ key: "dev", label: "Dev" },
+		]}
+		activeTab="all"
+		searchPlaceholder="Search packages..."
+	/>
 
-		<section class="mb-4 grid grid-cols-1 gap-3 xl:grid-cols-3">
-			<StatTile label="Outdated Packages" value="14" hint="12%" progress={35} tone="critical" />
-			<StatTile label="Abandoned Projects" value="3" hint="Critical risk" progress={15} tone="high" />
-			<StatTile label="Avg. Update Delay" value="42" hint="Days behind" progress={65} tone="medium" />
-		</section>
-
-		<FilterBar
-			tabItems={[
-				{ key: "all", label: "All" },
-				{ key: "prod", label: "Production" },
-				{ key: "dev", label: "Dev" },
-			]}
-			activeTab="all"
-			searchPlaceholder="Search packages..."
-		/>
-
-		<section class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[2fr_1fr]">
-			<div class="grid gap-3">
+	<section class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[2fr_1fr]">
+		<div class="grid gap-3">
+			{
+				rows.map((row) => (
+					<DependencyHealthRow
+						name={row.name}
+						version={row.version}
+						status={row.status as "stable" | "outdated" | "abandoned"}
+						latest={row.latest}
+						score={row.score}
+						activity={row.activity}
+					/>
+				))
+			}
+		</div>
+		<RecommendationsPanel
+			title="Priority Resolution"
+			summary="System architecture recommends immediate replacement of legacy UI components detected in sub-modules."
+			items={[
 				{
-					rows.map((row) => (
-						<DependencyHealthRow
-							name={row.name}
-							version={row.version}
-							status={row.status as "stable" | "outdated" | "abandoned"}
-							latest={row.latest}
-							score={row.score}
-							activity={row.activity}
-						/>
-					))
-				}
-			</div>
-			<RecommendationsPanel
-				title="Priority Resolution"
-				summary="System architecture recommends immediate replacement of legacy UI components detected in sub-modules."
-				items={[
-					{
-						icon: "swap_horizontal_circle",
-						title: "Replace old-legacy-ui",
-						body: "Transition to @modern/core-ui for long-term maintenance and security posture.",
-					},
-					{
-						icon: "update",
-						title: "Upgrade lodash-es",
-						body: "Upgrade to v4.18.0 to resolve known non-critical vulnerabilities.",
-					},
-					{
-						icon: "shield_with_heart",
-						title: "Lock Dependencies",
-						body: "Enable strict lockfile integrity checks in CI to prevent supply-chain poisoning.",
-					},
-				]}
-			/>
-		</section>
-
-		<Fragment slot="footer">
-			<FooterBar links={[{ label: "GitHub" }, { label: "Documentation" }, { label: "Privacy Policy" }]} />
-		</Fragment>
-	</AppShell>
-</Layout>
+					icon: "swap_horizontal_circle",
+					title: "Replace old-legacy-ui",
+					body: "Transition to @modern/core-ui for long-term maintenance and security posture.",
+				},
+				{
+					icon: "update",
+					title: "Upgrade lodash-es",
+					body: "Upgrade to v4.18.0 to resolve known non-critical vulnerabilities.",
+				},
+				{
+					icon: "shield_with_heart",
+					title: "Lock Dependencies",
+					body: "Enable strict lockfile integrity checks in CI to prevent supply-chain poisoning.",
+				},
+			]}
+		/>
+	</section>
+</ReportPageLayout>

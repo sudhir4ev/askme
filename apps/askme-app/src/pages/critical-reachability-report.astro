@@ -1,100 +1,73 @@
 ---
 import FilterBar from '../components/composite/FilterBar.astro'
-import AppShell from '../components/layout/AppShell.astro'
-import FooterBar from '../components/layout/FooterBar.astro'
-import PageHeader from '../components/layout/PageHeader.astro'
-import SidebarNav from '../components/layout/SidebarNav.astro'
-import TopNav from '../components/layout/TopNav.astro'
+import ReportPageLayout from '../components/layout/ReportPageLayout.astro'
 import StatTile from '../components/domain/StatTile.astro'
 import VulnerabilityItem from '../components/domain/VulnerabilityItem.astro'
 import Button from '../components/ui/Button.astro'
-import Layout from '../layouts/Layout.astro'
-
-const sideItems = [
-   { key: 'critical', label: 'Critical Reachability', icon: 'radar', href: '/critical-reachability-report' },
-   { key: 'license', label: 'License Compliance', icon: 'gavel', href: '/license-compliance-report' },
-   { key: 'health', label: 'Dependency Health', icon: 'health_and_safety', href: '/dependency-health-report' },
-]
 ---
 
-<Layout title="Critical Reachability Report">
-   <AppShell withSidebar={true} withTopbar={true} withFooter={true}>
-      <Fragment slot="sidebar">
-         <SidebarNav brand="Initial Dependency" subtitle="Precision Architect" items={sideItems} active="critical" />
-      </Fragment>
-      <Fragment slot="topbar">
-         <TopNav
-            links={[
-               { key: 'dashboard', label: 'Dashboard' },
-               { key: 'inventory', label: 'Inventory' },
-               { key: 'reports', label: 'Reports' },
-            ]}
-            active="inventory"
-            searchPlaceholder="Search libraries..."
-         />
-      </Fragment>
+<ReportPageLayout
+   pageTitle="Critical Reachability Report"
+   headerTitle="Dependency-Core-V1"
+   headerSubtitle="Scanned 4 minutes ago • Source: main branch"
+   sidebarActive="critical"
+   topActive="inventory"
+   topSearchPlaceholder="Search libraries..."
+>
+   <Button slot="actions" variant="secondary">
+      <span class="material-symbols-outlined">download</span>
+      Download Report
+   </Button>
 
-      <PageHeader title="Dependency-Core-V1" subtitle="Scanned 4 minutes ago • Source: main branch">
-         <Button slot="actions" variant="secondary">
-            <span class="material-symbols-outlined">download</span>
-            Download Report
-         </Button>
-      </PageHeader>
+   <section class="mb-4 grid grid-cols-1 gap-3 xl:grid-cols-4">
+      <StatTile label="Total Dependencies" value="142" hint="+12 from last scan" tone="success" />
+      <StatTile label="Vulnerabilities Detected" value="12" hint="3 critical, 9 high" />
+      <StatTile label="Reachable Risks" value="4" hint="Immediate action" tone="critical" />
+      <StatTile label="Security Posture" value="Critical" hint="Reachable vulnerabilities found" tone="critical" />
+   </section>
 
-      <section class="mb-4 grid grid-cols-1 gap-3 xl:grid-cols-4">
-         <StatTile label="Total Dependencies" value="142" hint="+12 from last scan" tone="success" />
-         <StatTile label="Vulnerabilities Detected" value="12" hint="3 critical, 9 high" />
-         <StatTile label="Reachable Risks" value="4" hint="Immediate action" tone="critical" />
-         <StatTile label="Security Posture" value="Critical" hint="Reachable vulnerabilities found" tone="critical" />
-      </section>
+   <FilterBar
+      tabItems={[
+         { key: 'reachable', label: 'Reachable' },
+         { key: 'all', label: 'All' },
+      ]}
+      activeTab="reachable"
+      searchPlaceholder="Search libraries..."
+      showSeverity={true}
+   />
 
-      <FilterBar
-         tabItems={[
-            { key: 'reachable', label: 'Reachable' },
-            { key: 'all', label: 'All' },
-         ]}
-         activeTab="reachable"
-         searchPlaceholder="Search libraries..."
-         showSeverity={true}
+   <section class="mt-4 grid gap-3">
+      <VulnerabilityItem
+         library="lodash"
+         version="v4.17.20"
+         severity="critical"
+         reachability="reachable"
+         cve="CVE-2020-8203"
+         description="Prototype pollution vulnerability in lodash before 4.17.21 may allow denial-of-service or arbitrary code execution via crafted payloads."
+         remediation="Upgrade lodash to version 4.17.21 or higher."
+         expanded={true}
       />
+      <VulnerabilityItem
+         library="axios"
+         version="v0.21.1"
+         severity="high"
+         reachability="reachable"
+         cve="CVE-2021-3749"
+      />
+      <VulnerabilityItem
+         library="moment"
+         version="v2.29.1"
+         severity="medium"
+         reachability="not-reachable"
+         cve="CVE-2022-24785"
+      />
+   </section>
 
-      <section class="mt-4 grid gap-3">
-         <VulnerabilityItem
-            library="lodash"
-            version="v4.17.20"
-            severity="critical"
-            reachability="reachable"
-            cve="CVE-2020-8203"
-            description="Prototype pollution vulnerability in lodash before 4.17.21 may allow denial-of-service or arbitrary code execution via crafted payloads."
-            remediation="Upgrade lodash to version 4.17.21 or higher."
-            expanded={true}
-         />
-         <VulnerabilityItem
-            library="axios"
-            version="v0.21.1"
-            severity="high"
-            reachability="reachable"
-            cve="CVE-2021-3749"
-         />
-         <VulnerabilityItem
-            library="moment"
-            version="v2.29.1"
-            severity="medium"
-            reachability="not-reachable"
-            cve="CVE-2022-24785"
-         />
-      </section>
+   <div class="mt-4 grid place-items-center">
+      <Button variant="secondary">Load More Results</Button>
+   </div>
 
-      <div class="mt-4 grid place-items-center">
-         <Button variant="secondary">Load More Results</Button>
-      </div>
-
-      <Button variant="fab" class="fixed right-6 bottom-6" aria-label="Download report">
-         <span class="material-symbols-outlined">ios_share</span>
-      </Button>
-
-      <Fragment slot="footer">
-         <FooterBar links={[{ label: 'GitHub' }, { label: 'Documentation' }, { label: 'Privacy Policy' }]} />
-      </Fragment>
-   </AppShell>
-</Layout>
+   <Button variant="fab" class="fixed right-6 bottom-6" aria-label="Download report">
+      <span class="material-symbols-outlined">ios_share</span>
+   </Button>
+</ReportPageLayout>

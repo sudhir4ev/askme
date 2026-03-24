@@ -1,5 +1,74 @@
 ---
-import LicenseComplianceReportPage from "./license-compliance-report.astro";
+import FilterBar from "../components/composite/FilterBar.astro";
+import PaginationBar from "../components/composite/PaginationBar.astro";
+import ReportPageLayout from "../components/layout/ReportPageLayout.astro";
+import LicenseEntryItem from "../components/domain/LicenseEntryItem.astro";
+import StatTile from "../components/domain/StatTile.astro";
+import Button from "../components/ui/Button.astro";
+
+const entries = [
+	{ pkg: "core-binary-transpiler", version: "v4.2.1-stable", license: "AGPL-3.0-only", risk: "critical", hash: "0x7F2A...E4B" },
+	{ pkg: "ui-system-primitive", version: "v2.0.0-rc3", license: "GPL-2.0-or-later", risk: "high", hash: "0x21B0...D9C" },
+	{ pkg: "fast-deep-copy", version: "v1.2.9", license: "MIT", risk: "compliant", hash: "0x88C1...A22" },
+	{
+		pkg: "react-native-svg-transformer",
+		version: "v0.14.3",
+		license: "Apache-2.0",
+		risk: "compliant",
+		hash: "0xAF04...77E",
+	},
+	{
+		pkg: "internal-legacy-adapter",
+		version: "v9.1.0-alpha",
+		license: "Unknown / Unspecified",
+		risk: "unknown",
+		hash: "0x0000...000",
+	},
+];
 ---
 
-<LicenseComplianceReportPage />
+<ReportPageLayout
+	pageTitle="License Compliance Report"
+	headerTitle="License Compliance"
+	headerSubtitle="Full legal audit of active dependencies across the production cluster."
+	sidebarActive="license"
+	topActive="reports"
+	topSearchPlaceholder="Search licenses..."
+>
+	<Button slot="actions" variant="secondary">
+		<span class="material-symbols-outlined">file_download</span>
+		Export Compliance Report
+	</Button>
+
+	<section class="mb-4 grid grid-cols-1 gap-3 xl:grid-cols-3">
+		<StatTile label="Total Licenses" value="142" hint="+12 this month" />
+		<StatTile label="Compliance Risks" value="03 / 08" hint="Critical / High" tone="critical" />
+		<StatTile label="Unknown Licenses" value="02" hint="Review required" tone="medium" />
+	</section>
+
+	<FilterBar
+		tabItems={[
+			{ key: "all", label: "All Licenses" },
+			{ key: "risky", label: "Risky Only" },
+			{ key: "unclassified", label: "Unclassified" },
+		]}
+		activeTab="all"
+		searchPlaceholder="Search licenses..."
+	/>
+
+	<section class="my-4 grid gap-3">
+		{
+			entries.map((entry) => (
+				<LicenseEntryItem
+					pkg={entry.pkg}
+					version={entry.version}
+					license={entry.license}
+					risk={entry.risk as "critical" | "high" | "compliant" | "unknown"}
+					hash={entry.hash}
+				/>
+			))
+		}
+	</section>
+
+	<PaginationBar label="Showing 5 of 142 unique dependency licenses detected" />
+</ReportPageLayout>

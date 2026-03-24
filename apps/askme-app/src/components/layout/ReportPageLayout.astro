@@ -1,0 +1,65 @@
+---
+import AppShell from "./AppShell.astro";
+import FooterBar from "./FooterBar.astro";
+import PageHeader from "./PageHeader.astro";
+import SidebarNav from "./SidebarNav.astro";
+import TopNav from "./TopNav.astro";
+import Layout from "../../layouts/Layout.astro";
+
+interface LinkItem {
+	key: string;
+	label: string;
+	href?: string;
+}
+
+interface Props {
+	pageTitle: string;
+	headerTitle: string;
+	headerSubtitle?: string;
+	sidebarActive: "critical" | "license" | "health";
+	topActive: string;
+	topSearchPlaceholder?: string;
+	topLinks?: LinkItem[];
+}
+
+const {
+	pageTitle,
+	headerTitle,
+	headerSubtitle,
+	sidebarActive,
+	topActive,
+	topSearchPlaceholder = "Search...",
+	topLinks = [
+		{ key: "dashboard", label: "Dashboard" },
+		{ key: "reports", label: "Reports" },
+		{ key: "inventory", label: "Inventory" },
+	],
+} = Astro.props;
+
+const sideItems = [
+	{ key: "critical", label: "Critical Reachability", icon: "radar", href: "/critical-reachability-report" },
+	{ key: "license", label: "License Compliance", icon: "gavel", href: "/license-compliance-report" },
+	{ key: "health", label: "Dependency Health", icon: "health_and_safety", href: "/dependency-health-report" },
+];
+---
+
+<Layout title={pageTitle}>
+	<AppShell withSidebar={true} withTopbar={true} withFooter={true}>
+		<Fragment slot="sidebar">
+			<SidebarNav brand="Initial Dependency" subtitle="Precision Architect" items={sideItems} active={sidebarActive} />
+		</Fragment>
+		<Fragment slot="topbar">
+			<TopNav links={topLinks} active={topActive} searchPlaceholder={topSearchPlaceholder} />
+		</Fragment>
+
+		<PageHeader title={headerTitle} subtitle={headerSubtitle}>
+			<slot name="actions" slot="actions" />
+		</PageHeader>
+
+		<slot />
+
+		<Fragment slot="footer">
+			<FooterBar links={[{ label: "GitHub" }, { label: "Documentation" }, { label: "Privacy Policy" }]} />
+		</Fragment>
+	</AppShell>
+</Layout>
