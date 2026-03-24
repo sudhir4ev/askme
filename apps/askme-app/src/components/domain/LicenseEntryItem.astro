@@ -18,64 +18,25 @@ const tone =
 ---
 
 <Card variant="interactive" padding="md">
-	<div class="row">
+	<div class="grid grid-cols-1 items-center gap-4 md:grid-cols-[2fr_auto_auto]">
 		<div>
-			<strong>{pkg}</strong>
-			<small class="mono">{version}</small>
-			<p class="mono">{license}</p>
+			<strong class="block text-base">{pkg}</strong>
+			<small class="block font-mono text-[0.72rem] text-[var(--color-text-secondary)]">
+				{version}
+			</small>
+			<p class="mt-1 mb-0 font-mono text-[0.8rem] text-[var(--color-text-secondary)]">
+				{license}
+			</p>
 		</div>
-		<div class="meta">
+		<div class="text-left md:text-right">
 			<Badge tone={tone}>{risk}</Badge>
-			<small class="mono">{hash}</small>
+			<small class="block font-mono text-[0.72rem] text-[var(--color-text-secondary)]">
+				{hash}
+			</small>
 		</div>
-		<div class="actions">
+		<div class="flex items-center gap-1.5">
 			<Button variant="icon"><span class="material-symbols-outlined">visibility</span></Button>
 			<Button variant="secondary" size="sm">{risk === "unknown" ? "Analyze" : "Details"}</Button>
 		</div>
 	</div>
 </Card>
-
-<style>
-	.row {
-		display: grid;
-		grid-template-columns: 2fr auto auto;
-		gap: 1rem;
-		align-items: center;
-	}
-
-	strong {
-		display: block;
-		font-size: 1rem;
-	}
-
-	p {
-		margin: 0.2rem 0 0;
-		font-size: 0.8rem;
-		color: var(--color-text-secondary);
-	}
-
-	small {
-		display: block;
-		color: var(--color-text-secondary);
-		font-size: 0.72rem;
-	}
-
-	.meta {
-		text-align: right;
-	}
-
-	.actions {
-		display: flex;
-		align-items: center;
-		gap: 0.4rem;
-	}
-
-	@media (max-width: 800px) {
-		.row {
-			grid-template-columns: 1fr;
-		}
-		.meta {
-			text-align: left;
-		}
-	}
-</style>

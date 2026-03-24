@@ -5,20 +5,45 @@ import Input from "../ui/Input.astro";
 ---
 
 <Card padding="lg">
-	<div class="dropzone" data-dropzone role="button" tabindex="0" aria-label="Upload dependency archive">
-		<input class="dropzone-input visually-hidden" data-dropzone-input type="file" accept=".zip,.tar,.tar.gz,.tgz" />
-		<span class="dropzone-hint mono" aria-hidden="true">Drop File</span>
-		<span class="material-symbols-outlined">upload_file</span>
-		<strong data-dropzone-title>Click to upload or drag and drop</strong>
-		<small class="mono">ZIP, TAR.GZ (MAX. 500MB)</small>
-		<small class="dropzone-file mono" data-dropzone-file aria-live="polite"></small>
+	<div
+		class="relative mb-4 grid h-60 cursor-pointer place-items-center gap-1 overflow-hidden rounded-[var(--radius-lg)] border-2 border-dashed border-[var(--color-border)] bg-[var(--color-bg-secondary)] p-4 text-center transition duration-200 before:pointer-events-none before:absolute before:inset-[0.6rem] before:rounded-[calc(var(--radius-lg)-2px)] before:border-2 before:border-dotted before:border-[#93c5fd] before:opacity-0 before:transition"
+		data-dropzone
+		role="button"
+		tabindex="0"
+		aria-label="Upload dependency archive"
+	>
+		<input
+			class="absolute h-px w-px overflow-hidden border-0 p-0"
+			data-dropzone-input
+			type="file"
+			accept=".zip,.tar,.tar.gz,.tgz"
+		/>
+		<span
+			class="pointer-events-none absolute inset-0 grid place-items-center font-mono text-[1.05rem] uppercase tracking-[0.08em] text-[#1d4ed8] opacity-0 transition"
+			data-dropzone-hint
+			aria-hidden="true"
+		>
+			Drop File
+		</span>
+		<span class="material-symbols-outlined relative z-10 text-[2.2rem] text-[#2563eb]">upload_file</span>
+		<strong class="relative z-10 block text-[0.9rem]" data-dropzone-title>Click to upload or drag and drop</strong>
+		<small class="relative z-10 font-mono text-[var(--color-muted)]">
+			ZIP, TAR.GZ (MAX. 500MB)
+		</small>
+		<small
+			class="relative z-10 min-h-[1em] font-mono text-[0.72rem] text-[var(--color-muted)]"
+			data-dropzone-file
+			aria-live="polite"
+		></small>
 	</div>
 
-	<div class="divider">
-		<span>Or link your repository</span>
+	<div class="relative my-4 text-center before:absolute before:inset-x-0 before:top-1/2 before:border-t before:border-[var(--color-border)]">
+		<span class="relative bg-white px-3 text-[0.7rem] uppercase tracking-[0.06em] text-[var(--color-text-secondary)]">
+			Or link your repository
+		</span>
 	</div>
 
-	<div class="form">
+	<div class="grid gap-3">
 		<Input icon="link" placeholder="https://github.com/username/repository" />
 		<Button variant="gradient" size="lg" fullWidth={true}>
 			<span class="material-symbols-outlined">rocket_launch</span>
@@ -27,134 +52,11 @@ import Input from "../ui/Input.astro";
 	</div>
 </Card>
 
-<style>
-	.dropzone {
-		border: 2px dashed var(--color-border);
-		border-radius: var(--radius-lg);
-		height: 15rem;
-		position: relative;
-		overflow: hidden;
-		display: grid;
-		place-items: center;
-		gap: 0.2rem;
-		text-align: center;
-		background: var(--color-bg-secondary);
-		margin-bottom: 1rem;
-		padding: 1rem;
-		cursor: pointer;
-		transition:
-			border-color 0.2s ease,
-			background-color 0.2s ease,
-			transform 0.2s ease;
-	}
-
-	.dropzone::before {
-		content: "";
-		position: absolute;
-		inset: 0.6rem;
-		border: 2px dotted #93c5fd;
-		border-radius: calc(var(--radius-lg) - 2px);
-		opacity: 0;
-		transition: opacity 0.2s ease;
-		pointer-events: none;
-	}
-
-	.dropzone > * {
-		position: relative;
-		z-index: 1;
-	}
-
-	.dropzone .material-symbols-outlined {
-		font-size: 2.2rem;
-		color: #2563eb;
-	}
-
-	.dropzone strong {
-		display: block;
-		font-size: 0.9rem;
-	}
-
-	.dropzone small {
-		color: var(--color-muted);
-	}
-
-	.dropzone-file {
-		min-height: 1em;
-		font-size: 0.72rem;
-	}
-
-	.dropzone:hover,
-	.dropzone:focus-visible {
-		border-color: #60a5fa;
-		background: #eff6ff;
-	}
-
-	.dropzone.drag-active {
-		border-color: #2563eb;
-		background: #dbeafe;
-		transform: translateY(-1px);
-	}
-
-	.dropzone.drag-active::before {
-		opacity: 1;
-	}
-
-	.dropzone.has-file {
-		border-color: #2563eb;
-		background: #f8fbff;
-	}
-
-	.dropzone-hint {
-		position: absolute;
-		inset: 0;
-		display: grid;
-		place-items: center;
-		font-size: 1.05rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: #1d4ed8;
-		opacity: 0;
-		pointer-events: none;
-		transition: opacity 0.2s ease;
-	}
-
-	.dropzone.drag-active .dropzone-hint {
-		opacity: 0.35;
-	}
-
-	.divider {
-		position: relative;
-		text-align: center;
-		margin: 0.9rem 0 1rem;
-	}
-
-	.divider::before {
-		content: "";
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 50%;
-		border-top: 1px solid var(--color-border);
-	}
-
-	.divider span {
-		position: relative;
-		background: white;
-		padding: 0 0.7rem;
-		font-size: 0.7rem;
-		color: var(--color-text-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
-	}
-
-	.form {
-		display: grid;
-		gap: 0.7rem;
-	}
-</style>
-
 <script>
 	const zones = document.querySelectorAll<HTMLElement>("[data-dropzone]");
+	const dragStateClasses = ["border-[#2563eb]", "bg-[#dbeafe]", "-translate-y-px", "before:opacity-100"];
+	const hasFileClasses = ["border-[#2563eb]", "bg-[#f8fbff]"];
+	const hoverClasses = ["hover:border-[#60a5fa]", "hover:bg-[#eff6ff]", "focus-visible:border-[#60a5fa]", "focus-visible:bg-[#eff6ff]"];
 
 	const setFileState = (zone: HTMLElement, file: File | null) => {
 		const title = zone.querySelector<HTMLElement>("[data-dropzone-title]");
@@ -165,13 +67,13 @@ import Input from "../ui/Input.astro";
 		}
 
 		if (file) {
-			zone.classList.add("has-file");
+			zone.classList.add(...hasFileClasses);
 			title.textContent = "File selected";
 			fileText.textContent = file.name;
 			return;
 		}
 
-		zone.classList.remove("has-file");
+		zone.classList.remove(...hasFileClasses);
 		title.textContent = "Click to upload or drag and drop";
 		fileText.textContent = "";
 	};
@@ -181,6 +83,8 @@ import Input from "../ui/Input.astro";
 		if (!input) {
 			return;
 		}
+
+		zone.classList.add(...hoverClasses);
 
 		zone.addEventListener("click", () => input.click());
 		zone.addEventListener("keydown", (event) => {
@@ -198,19 +102,25 @@ import Input from "../ui/Input.astro";
 		["dragenter", "dragover"].forEach((eventName) => {
 			zone.addEventListener(eventName, (event) => {
 				event.preventDefault();
-				zone.classList.add("drag-active");
+				zone.classList.add(...dragStateClasses);
+				const hint = zone.querySelector<HTMLElement>("[data-dropzone-hint]");
+				hint?.classList.add("opacity-35");
 			});
 		});
 
 		["dragleave", "dragend"].forEach((eventName) => {
 			zone.addEventListener(eventName, () => {
-				zone.classList.remove("drag-active");
+				zone.classList.remove(...dragStateClasses);
+				const hint = zone.querySelector<HTMLElement>("[data-dropzone-hint]");
+				hint?.classList.remove("opacity-35");
 			});
 		});
 
 		zone.addEventListener("drop", (event) => {
 			event.preventDefault();
-			zone.classList.remove("drag-active");
+			zone.classList.remove(...dragStateClasses);
+			const hint = zone.querySelector<HTMLElement>("[data-dropzone-hint]");
+			hint?.classList.remove("opacity-35");
 
 			const droppedFiles = event.dataTransfer?.files;
 			if (!droppedFiles || droppedFiles.length === 0) {

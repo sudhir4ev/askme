@@ -11,45 +11,15 @@ interface Props {
 const { links } = Astro.props;
 ---
 
-<div class="footer-wrap">
-	<span class="mono">© 2024 Initial Dependency</span>
-	<nav>
+<div class="flex flex-wrap items-center justify-between gap-3.5 border-t border-[var(--color-border)] bg-white px-[1.4rem] py-4">
+	<span class="font-mono text-[0.7rem] uppercase tracking-[0.08em] text-[var(--color-muted)]">
+		© 2024 Initial Dependency
+	</span>
+	<nav class="flex gap-4">
 		{
 			links.map((link) => (
-				<a href={link.href ?? "#"}>{link.label}</a>
+				<a class="text-[0.74rem] uppercase tracking-[0.05em] text-[var(--color-muted)]" href={link.href ?? "#"}>{link.label}</a>
 			))
 		}
 	</nav>
 </div>
-
-<style>
-	.footer-wrap {
-		border-top: 1px solid var(--color-border);
-		padding: 1rem 1.4rem;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		background: #fff;
-		gap: 0.8rem;
-		flex-wrap: wrap;
-	}
-
-	span {
-		font-size: 0.7rem;
-		color: var(--color-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-	}
-
-	nav {
-		display: flex;
-		gap: 1rem;
-	}
-
-	a {
-		font-size: 0.74rem;
-		color: var(--color-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-</style>

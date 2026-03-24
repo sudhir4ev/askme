@@ -8,35 +8,10 @@ interface Props {
 const { file, line, lines } = Astro.props;
 ---
 
-<div class="proof">
-	<div class="head mono">
+<div class="overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-code-bg)]">
+	<div class="flex items-center justify-between border-b border-[var(--color-border)] px-3 py-2 text-[0.68rem] text-[var(--color-text-secondary)] font-mono">
 		<span>{file}</span>
 		<span>Line {line}</span>
 	</div>
-	<pre class="mono"><code>{lines.join("\n")}</code></pre>
+	<pre class="m-0 overflow-x-auto p-3 text-[0.77rem] font-mono"><code>{lines.join("\n")}</code></pre>
 </div>
-
-<style>
-	.proof {
-		background: var(--color-code-bg);
-		border-radius: var(--radius-md);
-		border: 1px solid var(--color-border);
-		overflow: hidden;
-	}
-
-	.head {
-		padding: 0.55rem 0.7rem;
-		display: flex;
-		justify-content: space-between;
-		font-size: 0.68rem;
-		color: var(--color-text-secondary);
-		border-bottom: 1px solid var(--color-border);
-	}
-
-	pre {
-		margin: 0;
-		padding: 0.7rem;
-		font-size: 0.77rem;
-		overflow-x: auto;
-	}
-</style>

@@ -18,53 +18,26 @@ const scoreTone = score > 85 ? "success" : score > 50 ? "medium" : "critical";
 ---
 
 <Card variant="interactive" padding="md">
-	<div class="row">
+	<div class="grid grid-cols-1 items-center gap-4 md:grid-cols-[2fr_1.5fr_1.5fr_1fr]">
 		<div>
-			<strong>{name}</strong>
-			<small class="mono">{version}</small>
+			<strong class="block">{name}</strong>
+			<small class="font-mono text-[0.72rem] text-[var(--color-text-secondary)]">
+				{version}
+			</small>
 		</div>
-		<div class="center">
+		<div class="text-left md:text-center">
 			<Badge tone={statusTone}>{status}</Badge>
-			<small>Latest: {latest}</small>
+			<small class="block text-[0.72rem] text-[var(--color-text-secondary)]">Latest: {latest}</small>
 		</div>
 		<div>
-			<small class="mono">{score}/100</small>
+			<small class="font-mono text-[0.72rem] text-[var(--color-text-secondary)]">
+				{score}/100
+			</small>
 			<ProgressBar value={score} tone={scoreTone} />
 		</div>
 		<div>
-			<strong>{activity}</strong>
-			<small>Last Commit</small>
+			<strong class="block">{activity}</strong>
+			<small class="text-[0.72rem] text-[var(--color-text-secondary)]">Last Commit</small>
 		</div>
 	</div>
 </Card>
-
-<style>
-	.row {
-		display: grid;
-		grid-template-columns: 2fr 1.5fr 1.5fr 1fr;
-		gap: 1rem;
-		align-items: center;
-	}
-
-	strong {
-		display: block;
-	}
-
-	small {
-		color: var(--color-text-secondary);
-		font-size: 0.72rem;
-	}
-
-	.center {
-		text-align: center;
-	}
-
-	@media (max-width: 960px) {
-		.row {
-			grid-template-columns: 1fr;
-		}
-		.center {
-			text-align: left;
-		}
-	}
-</style>

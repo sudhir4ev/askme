@@ -18,23 +18,23 @@ interface Props {
 const { title, summary, items } = Astro.props;
 ---
 
-<aside class="panel">
+<aside class="grid gap-3">
 	<Card padding="lg">
-		<h3>{title}</h3>
-		<p>{summary}</p>
+		<h3 class="m-0">{title}</h3>
+		<p class="text-[0.84rem] leading-[1.5] text-[var(--color-text-secondary)]">{summary}</p>
 		<Button variant="secondary" size="sm">View Patch Plan</Button>
 	</Card>
 
-	<div class="items">
+	<div class="grid gap-2">
 		<SectionLabel>Key Recommendations</SectionLabel>
 		{
 			items.map((item) => (
 				<Card padding="md">
-					<div class="item">
-						<span class="material-symbols-outlined">{item.icon}</span>
+					<div class="flex items-start gap-2.5">
+						<span class="material-symbols-outlined text-[var(--color-primary)]">{item.icon}</span>
 						<div>
-							<strong>{item.title}</strong>
-							<p>{item.body}</p>
+							<strong class="block text-[0.82rem]">{item.title}</strong>
+							<p class="mt-1 mb-0 text-[0.76rem] text-[var(--color-text-secondary)]">{item.body}</p>
 						</div>
 					</div>
 				</Card>
@@ -42,45 +42,3 @@ const { title, summary, items } = Astro.props;
 		}
 	</div>
 </aside>
-
-<style>
-	.panel {
-		display: grid;
-		gap: 0.8rem;
-	}
-
-	h3 {
-		margin: 0;
-	}
-
-	p {
-		color: var(--color-text-secondary);
-		font-size: 0.84rem;
-		line-height: 1.5;
-	}
-
-	.items {
-		display: grid;
-		gap: 0.5rem;
-	}
-
-	.item {
-		display: flex;
-		gap: 0.6rem;
-		align-items: flex-start;
-	}
-
-	.item .material-symbols-outlined {
-		color: var(--color-primary);
-	}
-
-	.item strong {
-		display: block;
-		font-size: 0.82rem;
-	}
-
-	.item p {
-		margin: 0.2rem 0 0;
-		font-size: 0.76rem;
-	}
-</style>

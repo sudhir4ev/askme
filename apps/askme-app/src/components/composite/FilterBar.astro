@@ -13,12 +13,12 @@ interface Props {
 const { tabItems, activeTab, searchPlaceholder = "Search...", showSeverity = false } = Astro.props;
 ---
 
-<section class="filter">
+<section class="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-lg)] bg-[#f3f4f6] p-2">
 	<Tabs items={tabItems} active={activeTab} />
-	<div class="right">
-		<div class="search"><Input icon="search" placeholder={searchPlaceholder} /></div>
+	<div class="flex flex-wrap items-center gap-2.5">
+		<div class="min-w-56"><Input icon="search" placeholder={searchPlaceholder} /></div>
 		{showSeverity && (
-			<div class="severity">
+			<div class="flex gap-1">
 				<Badge tone="critical">Critical</Badge>
 				<Badge tone="high">High</Badge>
 				<Badge tone="medium">Medium</Badge>
@@ -26,32 +26,3 @@ const { tabItems, activeTab, searchPlaceholder = "Search...", showSeverity = fal
 		)}
 	</div>
 </section>
-
-<style>
-	.filter {
-		display: flex;
-		justify-content: space-between;
-		gap: 0.75rem;
-		align-items: center;
-		background: #f3f4f6;
-		border-radius: var(--radius-lg);
-		padding: 0.45rem;
-		flex-wrap: wrap;
-	}
-
-	.right {
-		display: flex;
-		gap: 0.6rem;
-		align-items: center;
-		flex-wrap: wrap;
-	}
-
-	.search {
-		min-width: 14rem;
-	}
-
-	.severity {
-		display: flex;
-		gap: 0.3rem;
-	}
-</style>

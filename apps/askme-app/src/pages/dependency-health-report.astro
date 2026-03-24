@@ -43,7 +43,7 @@ const rows = [
 
 		<PageHeader title="Dependency Health" subtitle="Package maintenance and freshness across active dependencies." />
 
-		<section class="metrics">
+		<section class="mb-4 grid grid-cols-1 gap-3 xl:grid-cols-3">
 			<StatTile label="Outdated Packages" value="14" hint="12%" progress={35} tone="critical" />
 			<StatTile label="Abandoned Projects" value="3" hint="Critical risk" progress={15} tone="high" />
 			<StatTile label="Avg. Update Delay" value="42" hint="Days behind" progress={65} tone="medium" />
@@ -59,8 +59,8 @@ const rows = [
 			searchPlaceholder="Search packages..."
 		/>
 
-		<section class="body-grid">
-			<div class="list">
+		<section class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[2fr_1fr]">
+			<div class="grid gap-3">
 				{
 					rows.map((row) => (
 						<DependencyHealthRow
@@ -102,31 +102,3 @@ const rows = [
 		</Fragment>
 	</AppShell>
 </Layout>
-
-<style>
-	.metrics {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.7rem;
-		margin-bottom: 1rem;
-	}
-
-	.body-grid {
-		display: grid;
-		grid-template-columns: 2fr 1fr;
-		gap: 1rem;
-		margin-top: 1rem;
-	}
-
-	.list {
-		display: grid;
-		gap: 0.7rem;
-	}
-
-	@media (max-width: 1100px) {
-		.metrics,
-		.body-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-</style>

@@ -18,26 +18,28 @@ const navLinks = [
 			<TopNav links={navLinks} active="dashboard" searchPlaceholder="Scan projects..." />
 		</Fragment>
 
-		<section class="hero">
-			<h1>Initial Dependency</h1>
-			<p>AI-powered reachability analysis for your dependencies.</p>
+		<section class="px-4 pt-9 pb-6 text-center">
+			<h1 class="m-0 text-[clamp(2rem,6vw,3.4rem)] tracking-[-0.03em]">Initial Dependency</h1>
+			<p class="mx-auto mt-3 max-w-[36rem] text-base text-[var(--color-text-secondary)]">
+				AI-powered reachability analysis for your dependencies.
+			</p>
 		</section>
 
-		<div class="center">
+		<div class="mx-auto max-w-[52rem]">
 			<UploadPanel />
 		</div>
 
-		<section class="features">
+		<section class="mx-auto mt-9 grid max-w-[64rem] grid-cols-1 gap-3 md:grid-cols-2">
 			<Card>
-				<h3>Deep Context</h3>
-				<p>
+				<h3 class="mb-1 text-[0.92rem] uppercase tracking-[0.08em] text-[var(--color-primary)]">Deep Context</h3>
+				<p class="m-0 text-[0.86rem] leading-[1.5] text-[var(--color-text-secondary)]">
 					Beyond simple vulnerability matching, we analyze actual execution paths to determine if a vulnerable
 					dependency is truly reachable.
 				</p>
 			</Card>
 			<Card>
-				<h3>Smart Prioritization</h3>
-				<p>
+				<h3 class="mb-1 text-[0.92rem] uppercase tracking-[0.08em] text-[var(--color-primary)]">Smart Prioritization</h3>
+				<p class="m-0 text-[0.86rem] leading-[1.5] text-[var(--color-text-secondary)]">
 					Reduce security fatigue by filtering out noise and focus on initial dependencies creating real attack
 					surfaces.
 				</p>
@@ -49,57 +51,3 @@ const navLinks = [
 		</Fragment>
 	</AppShell>
 </Layout>
-
-<style>
-	.hero {
-		text-align: center;
-		padding: 2.2rem 1rem 1.6rem;
-	}
-
-	.hero h1 {
-		margin: 0;
-		font-size: clamp(2rem, 6vw, 3.4rem);
-		letter-spacing: -0.03em;
-	}
-
-	.hero p {
-		margin: 0.7rem auto 0;
-		max-width: 36rem;
-		font-size: 1rem;
-		color: var(--color-text-secondary);
-	}
-
-	.center {
-		max-width: 52rem;
-		margin: 0 auto;
-	}
-
-	.features {
-		max-width: 64rem;
-		margin: 2.2rem auto 0;
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 0.9rem;
-	}
-
-	.features h3 {
-		margin: 0 0 0.4rem;
-		font-size: 0.92rem;
-		text-transform: uppercase;
-		letter-spacing: 0.08em;
-		color: var(--color-primary);
-	}
-
-	.features p {
-		margin: 0;
-		color: var(--color-text-secondary);
-		font-size: 0.86rem;
-		line-height: 1.5;
-	}
-
-	@media (max-width: 800px) {
-		.features {
-			grid-template-columns: 1fr;
-		}
-	}
-</style>

@@ -24,6 +24,8 @@
   box-sizing: border-box;
 }
 
+@import "tailwindcss";
+
 html,
 body {
   margin: 0;

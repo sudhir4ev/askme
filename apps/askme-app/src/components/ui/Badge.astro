@@ -12,57 +12,25 @@ interface Props {
 }
 
 const { tone = "default", size = "sm" } = Astro.props;
+const sizeClasses = {
+	sm: "px-2 py-0.5 text-[0.625rem]",
+	md: "px-2.5 py-1 text-xs",
+} as const;
+const toneClasses = {
+	default: "bg-[#dbeafe] text-[#1e3a8a]",
+	critical: "bg-[#fee2e2] text-[#991b1b]",
+	high: "bg-[#ffedd5] text-[#9a3412]",
+	medium: "bg-[#fef9c3] text-[#854d0e]",
+	success: "bg-[#dcfce7] text-[#166534]",
+	muted: "bg-[#e5e7eb] text-[#374151]",
+	info: "bg-[#e0e7ff] text-[#3730a3]",
+} as const;
 ---
 
-<span class:list={["badge", `badge--${tone}`, `badge--${size}`]}><slot /></span>
-
-<style>
-	.badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.2rem;
-		border-radius: 999px;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
-	}
-
-	.badge--sm {
-		font-size: 0.625rem;
-		padding: 0.2rem 0.5rem;
-	}
-
-	.badge--md {
-		font-size: 0.75rem;
-		padding: 0.3rem 0.6rem;
-	}
-
-	.badge--default {
-		background: #dbeafe;
-		color: #1e3a8a;
-	}
-	.badge--critical {
-		background: #fee2e2;
-		color: #991b1b;
-	}
-	.badge--high {
-		background: #ffedd5;
-		color: #9a3412;
-	}
-	.badge--medium {
-		background: #fef9c3;
-		color: #854d0e;
-	}
-	.badge--success {
-		background: #dcfce7;
-		color: #166534;
-	}
-	.badge--muted {
-		background: #e5e7eb;
-		color: #374151;
-	}
-	.badge--info {
-		background: #e0e7ff;
-		color: #3730a3;
-	}
-</style>
+<span
+	class:list={[
+		"inline-flex items-center gap-1 rounded-full font-bold uppercase tracking-[0.06em]",
+		sizeClasses[size],
+		toneClasses[tone],
+	]}
+><slot /></span>

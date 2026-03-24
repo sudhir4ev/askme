@@ -14,11 +14,25 @@ const {
 	href,
 	fullWidth = false,
 	type = "button",
-	class: list = [],
+	class: customClass = "",
 	...rest
 } = Astro.props;
 
 const Tag = href ? "a" : "button";
+const sizeClasses = {
+	sm: "px-2.5 py-1.5 text-xs",
+	md: "px-3.5 py-2.5 text-sm",
+	lg: "px-4 py-3 text-[0.95rem]",
+} as const;
+const variantClasses = {
+	primary: "bg-[var(--color-primary)] text-white",
+	secondary: "border-[var(--color-border)] bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]",
+	ghost: "bg-transparent text-[var(--color-text-secondary)]",
+	danger: "bg-[var(--color-critical)] text-white",
+	gradient: "bg-gradient-to-br from-[#2563eb] to-[#3b82f6] text-white",
+	icon: "h-8 w-8 border-[var(--color-border)] bg-[var(--color-bg-primary)] p-0",
+	fab: "h-12 w-12 rounded-full bg-[#2563eb] p-0 text-white shadow-[var(--shadow-md)]",
+} as const;
 ---
 
 <Tag
@@ -26,95 +40,12 @@ const Tag = href ? "a" : "button";
 	href={href}
 	type={href ? undefined : type}
 	class:list={[
-		"btn",
-		`btn--${variant}`,
-		`btn--${size}`,
-		fullWidth && "btn--full",
+		"inline-flex cursor-pointer items-center justify-center gap-2 rounded-[var(--radius-md)] border border-transparent font-semibold transition duration-200 hover:opacity-90 active:scale-[0.98]",
+		sizeClasses[size],
+		variantClasses[variant],
+		fullWidth && "w-full",
+		customClass,
 	]}
 >
 	<slot />
 </Tag>
-
-<style>
-	.btn {
-		border: 1px solid transparent;
-		border-radius: var(--radius-md);
-		font-weight: 600;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		justify-content: center;
-		transition: 0.2s ease;
-		cursor: pointer;
-	}
-
-	.btn--sm {
-		padding: 0.35rem 0.65rem;
-		font-size: 0.75rem;
-	}
-
-	.btn--md {
-		padding: 0.55rem 0.9rem;
-		font-size: 0.875rem;
-	}
-
-	.btn--lg {
-		padding: 0.8rem 1.1rem;
-		font-size: 0.95rem;
-	}
-
-	.btn--full {
-		width: 100%;
-	}
-
-	.btn--primary {
-		background: var(--color-primary);
-		color: white;
-	}
-
-	.btn--gradient {
-		background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-		color: white;
-	}
-
-	.btn--secondary {
-		background: var(--color-bg-primary);
-		border-color: var(--color-border);
-		color: var(--color-text-primary);
-	}
-
-	.btn--ghost {
-		background: transparent;
-		color: var(--color-text-secondary);
-	}
-
-	.btn--danger {
-		background: var(--color-critical);
-		color: white;
-	}
-
-	.btn--icon {
-		width: 2rem;
-		height: 2rem;
-		padding: 0;
-		background: var(--color-bg-primary);
-		border-color: var(--color-border);
-	}
-
-	.btn--fab {
-		width: 3rem;
-		height: 3rem;
-		border-radius: 999px;
-		background: #2563eb;
-		color: white;
-		box-shadow: var(--shadow-md);
-		padding: 0;
-	}
-
-	.btn:hover {
-		opacity: 0.92;
-	}
-	.btn:active {
-		transform: scale(0.98);
-	}
-</style>

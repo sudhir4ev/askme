@@ -9,67 +9,29 @@ interface Props {
 const { withSidebar = false, withTopbar = false, withFooter = false, sidebarWidth = 256 } = Astro.props;
 ---
 
-<div class:list={["shell", withSidebar && "shell--sidebar"]} style={`--sidebar-width:${sidebarWidth}px`}>
+<div
+	class:list={["min-h-screen", withSidebar && "grid grid-cols-1 md:[grid-template-columns:var(--sidebar-width)_1fr]"]}
+	style={`--sidebar-width:${sidebarWidth}px`}
+>
 	{withSidebar && (
-		<aside class="shell-sidebar">
+		<aside class="h-auto md:sticky md:top-0 md:h-screen">
 			<slot name="sidebar" />
 		</aside>
 	)}
 
-	<div class="shell-content">
+	<div>
 		{withTopbar && (
-			<header class="shell-topbar">
+			<header class="sticky top-0 z-30">
 				<slot name="topbar" />
 			</header>
 		)}
-		<main class:list={["shell-main", withTopbar && "shell-main--topbar"]}>
+		<main class:list={["p-6", withTopbar && "pt-4"]}>
 			<slot />
 		</main>
 		{withFooter && (
-			<footer class="shell-footer">
+			<footer>
 				<slot name="footer" />
 			</footer>
 		)}
 	</div>
 </div>
-
-<style>
-	.shell {
-		min-height: 100vh;
-	}
-
-	.shell--sidebar {
-		display: grid;
-		grid-template-columns: var(--sidebar-width) 1fr;
-	}
-
-	.shell-sidebar {
-		position: sticky;
-		top: 0;
-		height: 100vh;
-	}
-
-	.shell-topbar {
-		position: sticky;
-		top: 0;
-		z-index: 30;
-	}
-
-	.shell-main {
-		padding: 1.5rem;
-	}
-
-	.shell-main--topbar {
-		padding-top: 1rem;
-	}
-
-	@media (max-width: 960px) {
-		.shell--sidebar {
-			grid-template-columns: 1fr;
-		}
-		.shell-sidebar {
-			position: static;
-			height: auto;
-		}
-	}
-</style>

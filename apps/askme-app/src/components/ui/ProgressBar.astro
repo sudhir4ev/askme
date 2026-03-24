@@ -6,38 +6,15 @@ interface Props {
 
 const { value, tone = "primary" } = Astro.props;
 const clamped = Math.max(0, Math.min(100, value));
+const toneClasses = {
+	primary: "bg-[var(--color-primary)]",
+	critical: "bg-[var(--color-critical)]",
+	high: "bg-[var(--color-high)]",
+	medium: "bg-[var(--color-medium)]",
+	success: "bg-[var(--color-success)]",
+} as const;
 ---
 
-<div class="progress" aria-hidden="true">
-	<div class:list={["fill", `fill--${tone}`]} style={`width: ${clamped}%`}></div>
+<div class="h-1.5 w-full overflow-hidden rounded-full bg-[#e5e7eb]" aria-hidden="true">
+	<div class:list={["h-full rounded-full", toneClasses[tone]]} style={`width: ${clamped}%`}></div>
 </div>
-
-<style>
-	.progress {
-		width: 100%;
-		height: 0.35rem;
-		border-radius: 999px;
-		background: #e5e7eb;
-		overflow: hidden;
-	}
-
-	.fill {
-		height: 100%;
-		border-radius: inherit;
-	}
-	.fill--primary {
-		background: var(--color-primary);
-	}
-	.fill--critical {
-		background: var(--color-critical);
-	}
-	.fill--high {
-		background: var(--color-high);
-	}
-	.fill--medium {
-		background: var(--color-medium);
-	}
-	.fill--success {
-		background: var(--color-success);
-	}
-</style>

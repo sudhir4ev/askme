@@ -65,7 +65,7 @@ const entries = [
 			</Button>
 		</PageHeader>
 
-		<section class="metrics">
+		<section class="mb-4 grid grid-cols-1 gap-3 xl:grid-cols-3">
 			<StatTile label="Total Licenses" value="142" hint="+12 this month" />
 			<StatTile label="Compliance Risks" value="03 / 08" hint="Critical / High" tone="critical" />
 			<StatTile label="Unknown Licenses" value="02" hint="Review required" tone="medium" />
@@ -81,7 +81,7 @@ const entries = [
 			searchPlaceholder="Search licenses..."
 		/>
 
-		<section class="list">
+		<section class="my-4 grid gap-3">
 			{
 				entries.map((entry) => (
 					<LicenseEntryItem
@@ -102,24 +102,3 @@ const entries = [
 		</Fragment>
 	</AppShell>
 </Layout>
-
-<style>
-	.metrics {
-		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
-		gap: 0.7rem;
-		margin-bottom: 1rem;
-	}
-
-	.list {
-		display: grid;
-		gap: 0.7rem;
-		margin: 1rem 0;
-	}
-
-	@media (max-width: 1000px) {
-		.metrics {
-			grid-template-columns: 1fr;
-		}
-	}
-</style>

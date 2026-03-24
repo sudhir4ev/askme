@@ -8,9 +8,9 @@ interface Props {
 const { label } = Astro.props;
 ---
 
-<div class="pagination">
-	<span>{label}</span>
-	<div class="controls">
+<div class="flex flex-wrap items-center justify-between gap-2.5">
+	<span class="text-[0.8rem] text-[var(--color-text-secondary)]">{label}</span>
+	<div class="flex items-center gap-1">
 		<Button variant="secondary" size="sm">
 			<span class="material-symbols-outlined">chevron_left</span>
 		</Button>
@@ -22,24 +22,3 @@ const { label } = Astro.props;
 		</Button>
 	</div>
 </div>
-
-<style>
-	.pagination {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		gap: 0.6rem;
-		flex-wrap: wrap;
-	}
-
-	span {
-		font-size: 0.8rem;
-		color: var(--color-text-secondary);
-	}
-
-	.controls {
-		display: flex;
-		gap: 0.3rem;
-		align-items: center;
-	}
-</style>

@@ -7,37 +7,10 @@ interface Props {
 const { title, subtitle } = Astro.props;
 ---
 
-<header class="page-header">
-	<h1>{title}</h1>
-	{subtitle && <p>{subtitle}</p>}
-	<div class="actions"><slot name="actions" /></div>
+<header class="mb-5 flex flex-wrap items-end justify-between gap-4">
+	<div>
+		<h1 class="m-0 text-[clamp(1.5rem,2vw,2rem)] leading-[1.1]">{title}</h1>
+		{subtitle && <p class="mt-2 mb-0 max-w-[44rem] text-[0.92rem] text-[var(--color-text-secondary)]">{subtitle}</p>}
+	</div>
+	<div class="flex gap-2"><slot name="actions" /></div>
 </header>
-
-<style>
-	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: end;
-		gap: 1rem;
-		margin-bottom: 1.2rem;
-		flex-wrap: wrap;
-	}
-
-	h1 {
-		margin: 0;
-		font-size: clamp(1.5rem, 2vw, 2rem);
-		line-height: 1.1;
-	}
-
-	p {
-		margin: 0.45rem 0 0;
-		color: var(--color-text-secondary);
-		font-size: 0.92rem;
-		max-width: 44rem;
-	}
-
-	.actions {
-		display: flex;
-		gap: 0.5rem;
-	}
-</style>

@@ -16,28 +16,9 @@ const { label, value, hint, progress, tone = "primary" } = Astro.props;
 
 <Card variant="interactive" padding="md">
 	<SectionLabel>{label}</SectionLabel>
-	<div class="value-row">
-		<strong>{value}</strong>
-		{hint && <span>{hint}</span>}
+	<div class="mt-2 mb-3 flex items-baseline gap-2">
+		<strong class="text-[2rem] leading-none">{value}</strong>
+		{hint && <span class="text-xs text-[var(--color-text-secondary)]">{hint}</span>}
 	</div>
 	{typeof progress === "number" && <ProgressBar value={progress} tone={tone} />}
 </Card>
-
-<style>
-	.value-row {
-		display: flex;
-		gap: 0.5rem;
-		align-items: baseline;
-		margin: 0.45rem 0 0.75rem;
-	}
-
-	strong {
-		font-size: 2rem;
-		line-height: 1;
-	}
-
-	span {
-		font-size: 0.75rem;
-		color: var(--color-text-secondary);
-	}
-</style>
