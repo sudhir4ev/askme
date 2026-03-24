@@ -5,7 +5,7 @@ import Avatar from "../ui/Avatar.astro";
 interface NavItem {
 	key: string;
 	label: string;
-	icon: string;
+	icon: any;
 	href?: string;
 }
 
@@ -29,18 +29,21 @@ const { brand, subtitle, items, active } = Astro.props;
 
 	<nav class="mt-[1.3rem] flex flex-col gap-[0.3rem]">
 		{
-			items.map((item) => (
-				<a
-					class:list={[
-						"flex items-center gap-[0.6rem] rounded-[var(--radius-md)] px-[0.7rem] py-[0.65rem] text-[0.88rem] text-[var(--color-text-secondary)]",
-						item.key === active && "border border-[var(--color-border)] bg-white text-[#1d4ed8]",
-					]}
-					href={item.href ?? "#"}
-				>
-					<span class="material-symbols-outlined">{item.icon}</span>
-					<span>{item.label}</span>
-				</a>
-			))
+			items.map((item) => {
+				const Icon = item.icon;
+				return (
+					<a
+						class:list={[
+							"flex items-center gap-[0.6rem] rounded-[var(--radius-md)] px-[0.7rem] py-[0.65rem] text-[0.88rem] text-[var(--color-text-secondary)]",
+							item.key === active && "border border-[var(--color-border)] bg-white text-[#1d4ed8]",
+						]}
+						href={item.href ?? "#"}
+					>
+						<Icon class="h-[1.05rem] w-[1.05rem]" />
+						<span>{item.label}</span>
+					</a>
+				);
+			})
 		}
 	</nav>
 

@@ -1,6 +1,7 @@
 ---
 import Avatar from "../ui/Avatar.astro";
 import Input from "../ui/Input.astro";
+import { Bell, Search } from "@lucide/astro";
 
 interface LinkItem {
 	key: string;
@@ -36,14 +37,14 @@ const { links, active, searchPlaceholder = "Search..." } = Astro.props;
 
 	<div class="flex items-center gap-2">
 		<div class="w-[min(18rem,45vw)]">
-			<Input icon="search" placeholder={searchPlaceholder} />
+			<Input icon={Search} placeholder={searchPlaceholder} />
 		</div>
 		<button
 			class="grid h-8 w-8 place-items-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-text-secondary)]"
 			type="button"
 			aria-label="Notifications"
 		>
-			<span class="material-symbols-outlined">notifications</span>
+			<Bell class="h-4 w-4" />
 		</button>
 		<Avatar initials="JD" />
 	</div>

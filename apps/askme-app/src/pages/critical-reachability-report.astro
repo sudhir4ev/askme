@@ -4,6 +4,7 @@ import ReportPageLayout from '../components/layout/ReportPageLayout.astro'
 import StatTile from '../components/domain/StatTile.astro'
 import VulnerabilityItem from '../components/domain/VulnerabilityItem.astro'
 import Button from '../components/ui/Button.astro'
+import { Download } from '@lucide/astro'
 ---
 
 <ReportPageLayout
@@ -15,7 +16,7 @@ import Button from '../components/ui/Button.astro'
    topSearchPlaceholder="Search libraries..."
 >
    <Button slot="actions" variant="secondary">
-      <span class="material-symbols-outlined">download</span>
+      <Download size={16} />
       Download Report
    </Button>
 

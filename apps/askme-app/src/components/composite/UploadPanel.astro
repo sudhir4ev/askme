@@ -2,6 +2,7 @@
 import Button from "../ui/Button.astro";
 import Card from "../ui/Card.astro";
 import Input from "../ui/Input.astro";
+import { Link } from "@lucide/astro";
 ---
 
 <Card padding="lg">
@@ -44,7 +45,7 @@ import Input from "../ui/Input.astro";
 	</div>
 
 	<div class="grid gap-3">
-		<Input icon="link" placeholder="https://github.com/username/repository" />
+		<Input icon={Link} placeholder="https://github.com/username/repository" />
 		<Button variant="gradient" size="lg" fullWidth={true}>
 			<span class="material-symbols-outlined">rocket_launch</span>
 			Start Scan

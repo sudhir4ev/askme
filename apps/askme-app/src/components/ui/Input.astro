@@ -1,17 +1,27 @@
 ---
 interface Props {
-	type?: string;
+	type?: "text" | "search" | "email" | "password" | "url" | "tel" | "number";
 	placeholder?: string;
 	name?: string;
 	value?: string;
-	icon?: string;
+	icon?: string | any;
 }
 
 const { type = "text", placeholder, name, value, icon } = Astro.props;
 ---
 
 <label class="inline-flex w-full items-center gap-1.5 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2.5">
-	{icon && <span class="material-symbols-outlined text-base text-[var(--color-muted)]">{icon}</span>}
+	{
+		typeof icon === "string" ? (
+			<span class="material-symbols-outlined text-base text-[var(--color-muted)]">{icon}</span>
+		) : (
+			icon &&
+			(() => {
+				const Icon = icon;
+				return <Icon class="h-4 w-4 text-[var(--color-muted)]" />;
+			})()
+		)
+	}
 	<input
 		{type}
 		{placeholder}

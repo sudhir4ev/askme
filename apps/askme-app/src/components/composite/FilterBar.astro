@@ -2,6 +2,7 @@
 import Tabs from "../ui/Tabs.astro";
 import Input from "../ui/Input.astro";
 import Badge from "../ui/Badge.astro";
+import { Search } from "@lucide/astro";
 
 interface Props {
 	tabItems: { key: string; label: string }[];
@@ -16,7 +17,7 @@ const { tabItems, activeTab, searchPlaceholder = "Search...", showSeverity = fal
 <section class="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-lg)] bg-[#f3f4f6] p-2">
 	<Tabs items={tabItems} active={activeTab} />
 	<div class="flex flex-wrap items-center gap-2.5">
-		<div class="min-w-56"><Input icon="search" placeholder={searchPlaceholder} /></div>
+		<div class="min-w-56"><Input icon={Search} placeholder={searchPlaceholder} /></div>
 		{showSeverity && (
 			<div class="flex gap-1">
 				<Badge tone="critical">Critical</Badge>
