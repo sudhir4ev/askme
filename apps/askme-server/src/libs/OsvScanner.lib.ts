@@ -25,11 +25,11 @@ async function executeVulnerabilityScanSourcePath(
 ) {
   assert(osvScannerExecutablePath, 'osvScannerExecutablePath is required');
   assert(
-    fs.existsSync(path.resolve(this.osvScannerExecutablePath)),
-    'osvScannerExecutablePath does not exist',
+    fs.existsSync(path.resolve(osvScannerExecutablePath)),
+    `scanner not found: \`${osvScannerExecutablePath}\``,
   );
 
-  const command = path.resolve(this.osvScannerExecutablePath);
+  const command = path.resolve(osvScannerExecutablePath);
   const args = [sourcePath, '--format', 'json'];
   const commandString = [command, ...args].join(' ');
   console.log(commandString);
