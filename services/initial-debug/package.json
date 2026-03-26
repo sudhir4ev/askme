@@ -2,7 +2,9 @@
   "name": "initial-debug",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
   "scripts": {
     "test": "vitest"
   },

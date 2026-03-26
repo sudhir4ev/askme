@@ -48,7 +48,7 @@ export class AppService {
         .join('\n\n'),
       formatInstructions: parser.getFormatInstructions(),
     });
-    
+
     return result;
   }
 }

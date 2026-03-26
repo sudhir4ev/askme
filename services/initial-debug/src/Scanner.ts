@@ -1,9 +1,8 @@
-const { promisify } = require('util')
 import fs from 'fs'
 import path from 'path'
-import { stdout } from 'process'
-
-const exec = promisify(require('child_process').exec)
+import { promisify } from 'util'
+import { exec as execChildProcess } from 'child_process'
+const exec = promisify(execChildProcess)
 
 class Scanner {
    private srcPath: string
@@ -23,31 +22,19 @@ class Scanner {
    }
 
    async parseManifest() {
-      // const manifest = this.getPackageJson(this.srcPath)
-      // const dependencies = {
-      //    ...manifest.dependencies,
-      //    ...manifest.devDependencies,
-      // }
-
-      // // Query OSV for vulnerabilities
-      // for (const [name, version] of Object.entries(dependencies)) {
-      //    const response = await queryVulnerabilities({
-      //       package: { name, ecosystem: 'npm' },
-      //       version: version as string,
-      //    })
-      //    console.log(response)
-      // }
       return executeVulnerabilityScanSourcePath(this.srcPath)
    }
 }
 
 async function executeVulnerabilityScanSourcePath(sourcePath: string) {
+   console.log('dirname', __dirname)
    const command = path.resolve(__dirname, '..', '.versions', 'osv-scanner_darwin_arm64-v2.3.3')
+   console.log('executing command', command)
    const args = [sourcePath, '--format', 'json']
    const commandString = [command, ...args].join(' ')
    console.log(commandString)
 
-   const { stdout, stderr, resultCode } = await exec(commandString, { stdout: 'pipe' })
+   const { stdout, stderr, resultCode } = await exec(commandString, {  })
       .then(({ stdout, stderr }) => ({
          stdout,
          stderr,
