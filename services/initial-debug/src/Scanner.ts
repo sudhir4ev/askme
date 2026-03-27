@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { promisify } from 'util'
 import { exec as execChildProcess } from 'child_process'
+import assert from 'assert'
 const exec = promisify(execChildProcess)
 
 class Scanner {
@@ -27,14 +28,16 @@ class Scanner {
 }
 
 async function executeVulnerabilityScanSourcePath(sourcePath: string) {
-   console.log('dirname', __dirname)
-   const command = path.resolve(__dirname, '..', '.versions', 'osv-scanner_darwin_arm64-v2.3.3')
+   const scannerPath = process.env.OSV_SCANNER_PATH
+   assert(scannerPath, 'OSV_SCANNER_PATH is not set')
+   
+   const command = path.resolve(scannerPath)
    console.log('executing command', command)
    const args = [sourcePath, '--format', 'json']
    const commandString = [command, ...args].join(' ')
    console.log(commandString)
 
-   const { stdout, stderr, resultCode } = await exec(commandString, {  })
+   const { stdout, stderr, resultCode } = await exec(commandString, {})
       .then(({ stdout, stderr }) => ({
          stdout,
          stderr,
