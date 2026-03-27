@@ -55,17 +55,25 @@ interface VulnerabilityScanTriggerResponse {
 
 type UiSeverity = 'critical' | 'high' | 'medium'
 type UiReachability = 'reachable' | 'not-reachable'
+type UiSeverityRating = 'Critical' | 'High' | 'Medium'
 
-interface UiVulnerabilityItem {
-   library: string
-   version: string
+interface UiVulnerabilityEntry {
+   cve: string
    severity: UiSeverity
    severityScore?: string
-   severityRating: 'Critical' | 'High' | 'Medium'
-   reachability: UiReachability
-   cve: string
+   severityRating: UiSeverityRating
    description: string
    remediation: string
+}
+
+interface UiPackageVulnerabilityItem {
+   library: string
+   version: string
+   reachability: UiReachability
+   vulnerabilities: UiVulnerabilityEntry[]
+   highestSeverity: UiSeverity
+   highestSeverityScore?: string
+   highestSeverityRating: UiSeverityRating
    impactAssessment?: {
       summary: string
       impactScore: number
@@ -204,7 +212,7 @@ function mapSeverityFromScore(score: number): UiSeverity {
    return 'medium'
 }
 
-function toSeverityRating(severity: UiSeverity): UiVulnerabilityItem['severityRating'] {
+function toSeverityRating(severity: UiSeverity): UiSeverityRating {
    if (severity === 'critical') {
       return 'Critical'
    }
@@ -217,7 +225,7 @@ function toSeverityRating(severity: UiSeverity): UiVulnerabilityItem['severityRa
 function getSeverityData(
    vulnerability: ParsedPackageVulnerability,
    impactAssessment?: ImpactAssessment,
-): Pick<UiVulnerabilityItem, 'severity' | 'severityScore' | 'severityRating'> {
+): Pick<UiVulnerabilityEntry, 'severity' | 'severityScore' | 'severityRating'> {
    const maxScore = toSeverityEntries(vulnerability.severity).reduce<number | null>((currentMax, entry) => {
       const value = getCvssNumericScore(entry.score)
       if (value === null) {
@@ -267,7 +275,7 @@ function toVersionLabel(version?: string | null): string {
    return version.startsWith('v') ? version : `v${version}`
 }
 
-function buildProof(snippets: VulnerableSnippet[]): UiVulnerabilityItem['proof'] {
+function buildProof(snippets: VulnerableSnippet[]): UiPackageVulnerabilityItem['proof'] {
    const firstSnippet = snippets[0]
    if (!firstSnippet) {
       return undefined
@@ -286,32 +294,84 @@ function buildProof(snippets: VulnerableSnippet[]): UiVulnerabilityItem['proof']
    }
 }
 
-const uiVulnerabilities: UiVulnerabilityItem[] = scanResponse.vulnerabilities.flatMap((packageEntry) => {
+function getHighestSeverity(
+   vulnerabilities: UiVulnerabilityEntry[],
+): Pick<UiPackageVulnerabilityItem, 'highestSeverity' | 'highestSeverityScore' | 'highestSeverityRating'> {
+   const severityOrder: Record<UiSeverity, number> = {
+      critical: 3,
+      high: 2,
+      medium: 1,
+   }
+
+   const highest = vulnerabilities.reduce<UiVulnerabilityEntry | null>((current, item) => {
+      if (!current) {
+         return item
+      }
+
+      if (severityOrder[item.severity] > severityOrder[current.severity]) {
+         return item
+      }
+
+      if (severityOrder[item.severity] === severityOrder[current.severity]) {
+         const itemScore = Number(item.severityScore ?? 0)
+         const currentScore = Number(current.severityScore ?? 0)
+         return itemScore > currentScore ? item : current
+      }
+
+      return current
+   }, null)
+
+   if (!highest) {
+      return {
+         highestSeverity: 'medium',
+         highestSeverityScore: undefined,
+         highestSeverityRating: 'Medium',
+      }
+   }
+
+   return {
+      highestSeverity: highest.severity,
+      highestSeverityScore: highest.severityScore,
+      highestSeverityRating: highest.severityRating,
+   }
+}
+
+const uiVulnerabilitiesByPackage: UiPackageVulnerabilityItem[] = scanResponse.vulnerabilities.map((packageEntry) => {
    const reachability: UiReachability =
       packageEntry.vulnerableSnippets.length > 0 ? 'reachable' : 'not-reachable'
    const proof = buildProof(packageEntry.vulnerableSnippets)
 
-   return packageEntry.vulnerabilities.map((vulnerability) => {
+   const vulnerabilities = packageEntry.vulnerabilities.map((vulnerability) => {
       const severityData = getSeverityData(
          vulnerability,
          packageEntry.impactAssessment,
       )
 
       return {
+         cve: getCve(vulnerability),
+         severity: severityData.severity,
+         severityScore: severityData.severityScore,
+         severityRating: severityData.severityRating,
+         description:
+            vulnerability.summary ??
+            vulnerability.details ??
+            'No vulnerability description provided.',
+         remediation:
+            packageEntry.impactAssessment?.remediation ??
+            'Upgrade to a non-vulnerable version and validate impacted usage paths.',
+      }
+   })
+
+   const highestSeverityData = getHighestSeverity(vulnerabilities)
+
+   return {
       library: packageEntry.packageName,
       version: toVersionLabel(packageEntry.packageVersion),
-      severity: severityData.severity,
-      severityScore: severityData.severityScore,
-      severityRating: severityData.severityRating,
       reachability,
-      cve: getCve(vulnerability),
-      description:
-         vulnerability.summary ??
-         vulnerability.details ??
-         'No vulnerability description provided.',
-      remediation:
-         packageEntry.impactAssessment?.remediation ??
-         'Upgrade to a non-vulnerable version and validate impacted usage paths.',
+      vulnerabilities,
+      highestSeverity: highestSeverityData.highestSeverity,
+      highestSeverityScore: highestSeverityData.highestSeverityScore,
+      highestSeverityRating: highestSeverityData.highestSeverityRating,
       impactAssessment: packageEntry.impactAssessment
          ? {
               summary: packageEntry.impactAssessment.summary,
@@ -323,16 +383,19 @@ const uiVulnerabilities: UiVulnerabilityItem[] = scanResponse.vulnerabilities.fl
            }
          : undefined,
       proof,
-      }
-   })
+   }
 })
 
-const vulnerabilitiesDetected = uiVulnerabilities.length
+const vulnerabilityEntries = uiVulnerabilitiesByPackage.flatMap(
+   (item) => item.vulnerabilities,
+)
+
+const vulnerabilitiesDetected = vulnerabilityEntries.length
 const reachableRisks = scanResponse.vulnerabilities.filter(
    (packageEntry) => packageEntry.vulnerableSnippets.length > 0,
 ).length
-const criticalCount = uiVulnerabilities.filter((item) => item.severity === 'critical').length
-const highCount = uiVulnerabilities.filter((item) => item.severity === 'high').length
+const criticalCount = vulnerabilityEntries.filter((item) => item.severity === 'critical').length
+const highCount = vulnerabilityEntries.filter((item) => item.severity === 'high').length
 const securityPosture = reachableRisks > 0 ? 'Critical' : 'Elevated'
 const securityPostureHint =
    reachableRisks > 0 ? 'Reachable vulnerabilities found' : 'No reachable vulnerabilities detected'
@@ -374,22 +437,20 @@ const securityPostureHint =
             Unable to load vulnerability scan: {scanError}
          </p>
       )}
-      {!scanError && uiVulnerabilities.length === 0 && (
+      {!scanError && uiVulnerabilitiesByPackage.length === 0 && (
          <p class="rounded-sm border border-(--color-border) bg-(--color-bg-secondary) px-3 py-2 text-sm text-(--color-text-secondary)">
             No vulnerabilities were returned for the configured source path.
          </p>
       )}
-      {uiVulnerabilities.map((item, index) => (
+      {uiVulnerabilitiesByPackage.map((item, index) => (
          <VulnerabilityItem
             library={item.library}
             version={item.version}
-            severity={item.severity}
-            severityScore={item.severityScore}
-            severityRating={item.severityRating}
+            severity={item.highestSeverity}
+            severityScore={item.highestSeverityScore}
+            severityRating={item.highestSeverityRating}
             reachability={item.reachability}
-            cve={item.cve}
-            description={item.description}
-            remediation={item.remediation}
+            vulnerabilities={item.vulnerabilities}
             impactAssessment={item.impactAssessment}
             proof={item.proof}
             expanded={index === 0}
