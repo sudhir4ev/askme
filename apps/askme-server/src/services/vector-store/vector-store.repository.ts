@@ -7,6 +7,12 @@ export interface VulnerabilityChunkRecord {
 }
 
 export interface VectorStoreRepository {
-  upsert(records: VulnerabilityChunkRecord[]): Promise<void>;
-  queryByVulnId(vulnerabilityId: string): Promise<VulnerabilityChunkRecord[]>;
+  upsert(
+    records: VulnerabilityChunkRecord[],
+    collectionName: string,
+  ): Promise<void>;
+  queryByVulnId(
+    vulnerabilityId: string,
+    collectionName: string,
+  ): Promise<VulnerabilityChunkRecord[]>;
 }

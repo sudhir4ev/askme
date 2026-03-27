@@ -15,12 +15,15 @@ export class ChromaDbVectorStoreRepository implements VectorStoreRepository {
     path: process.env.CHROMA_URL,
   });
 
-  async upsert(records: VulnerabilityChunkRecord[]): Promise<void> {
+  async upsert(
+    records: VulnerabilityChunkRecord[],
+    collectionName: string,
+  ): Promise<void> {
     if (records.length === 0) {
       return;
     }
 
-    const collection = await this.getCollection();
+    const collection = await this.getCollection(collectionName);
     await collection.upsert({
       ids: records.map((record) => record.id),
       embeddings: records.map((record) => record.embedding),
@@ -34,8 +37,9 @@ export class ChromaDbVectorStoreRepository implements VectorStoreRepository {
 
   async queryByVulnId(
     vulnerabilityId: string,
+    collectionName: string,
   ): Promise<VulnerabilityChunkRecord[]> {
-    const collection = await this.getCollection();
+    const collection = await this.getCollection(collectionName);
     const results = await collection.get({
       where: {
         vulnerabilityId: {
@@ -67,11 +71,11 @@ export class ChromaDbVectorStoreRepository implements VectorStoreRepository {
     });
   }
 
-  private async getCollection(): Promise<Collection> {
+  private async getCollection(name: string): Promise<Collection> {
     if (!this.collectionPromise) {
       this.collectionPromise = this.client
         .getOrCreateCollection({
-          name: DEFAULT_CHROMA_COLLECTION,
+          name: name ?? DEFAULT_CHROMA_COLLECTION,
         })
         .catch((error: unknown) => {
           this.collectionPromise = undefined;
