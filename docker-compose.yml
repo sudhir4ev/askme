@@ -7,6 +7,15 @@ services:
       - "8000:8000"
     volumes:
       - chromadb_data:/chroma/chroma
+  redis:
+    image: redis:7-alpine
+    container_name: askme-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
 
 volumes:
   chromadb_data:
+  redis_data:
