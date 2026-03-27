@@ -6,6 +6,8 @@ Monorepo for dependency vulnerability analysis with:
 
 Analyze a source project for vulnerable dependencies and produce actionable, context-aware insights (what is vulnerable, where it is used, and likely impact).
 
+<img src="./docs/assets/banner.png">
+
 ## How it works!
 
 - `apps/askme-server`: NestJS API that exposes vulnerability scan services.   
