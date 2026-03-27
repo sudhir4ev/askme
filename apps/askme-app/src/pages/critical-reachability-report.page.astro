@@ -88,14 +88,19 @@ interface UiPackageVulnerabilityItem {
    }
 }
 
+interface Props {
+   sourceId?: string
+}
+
+const { sourceId: sourceIdProp = '' } = Astro.props as Props
 const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL ?? 'http://localhost:3000'
-const sourcePath = '/Users/sudhir/Downloads/Node.js-Vulnerable-main'
+const sourceId = sourceIdProp.trim() || Astro.url.searchParams.get('sourceId')?.trim() || ''
 const requestId = typeof crypto?.randomUUID === 'function'
    ? crypto.randomUUID()
    : `req-${Date.now()}`
 
 const defaultResponse: VulnerabilityScanTriggerResponse = {
-   sourcePath,
+   sourcePath: sourceId ? `source:${sourceId}` : 'source:unknown',
    scannedPackages: 0,
    vulnerablePackages: 0,
    vulnerabilities: [],
@@ -104,26 +109,30 @@ const defaultResponse: VulnerabilityScanTriggerResponse = {
 let scanResponse: VulnerabilityScanTriggerResponse = defaultResponse
 let scanError: string | null = null
 
-try {
-   const response = await fetch(`${API_BASE_URL}/vulnerability-scan/scan`, {
-      method: 'POST',
-      headers: {
-         'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-         requestId,
-         sourcePath,
-         skipCache: false,
-      }),
-   })
+if (!sourceId) {
+   scanError = 'Missing sourceId. Start a new scan from the upload page.'
+} else {
+   try {
+      const response = await fetch(`${API_BASE_URL}/askme/source/scan`, {
+         method: 'POST',
+         headers: {
+            'content-type': 'application/json',
+         },
+         body: JSON.stringify({
+            requestId,
+            sourceId,
+            skipCache: false,
+         }),
+      })
 
-   if (!response.ok) {
-      throw new Error(`scan request failed: ${response.status}`)
+      if (!response.ok) {
+         throw new Error(`scan request failed: ${response.status}`)
+      }
+
+      scanResponse = (await response.json()) as VulnerabilityScanTriggerResponse
+   } catch (error) {
+      scanError = error instanceof Error ? error.message : 'Scan request failed'
    }
-
-   scanResponse = (await response.json()) as VulnerabilityScanTriggerResponse
-} catch (error) {
-   scanError = error instanceof Error ? error.message : 'Scan request failed'
 }
 
 function extractScoreValue(score: string | number): number | null {
