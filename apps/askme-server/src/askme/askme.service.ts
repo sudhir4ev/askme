@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { promises as fs } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
 import { execFile } from 'node:child_process';
@@ -20,6 +21,7 @@ import {
 import type {
   SourceFetchResponse,
   SourceRecord,
+  SourceStatusResponse,
   SourceScanRequest,
   SourceType,
 } from './askme.types';
@@ -30,16 +32,18 @@ type UploadedFile = {
 };
 
 const SOURCE_KEY_PREFIX = 'source';
-const TMP_DIRECTORY_NAME = '.tmp';
+const SOURCE_SCAN_KEY_PREFIX = 'source-scan';
 const execFileAsync = promisify(execFile);
+const SOURCE_TEMP_PREFIX = 'askme-source-';
+type DisposableTempDir = {
+  path: string;
+  remove: () => Promise<void>;
+};
 
 @Injectable()
 export class AskMeService {
   private readonly logger = new Logger(AskMeService.name);
-  private readonly tempRootDir = path.resolve(
-    process.cwd(),
-    TMP_DIRECTORY_NAME,
-  );
+  private readonly sourceTempDirs = new Map<string, DisposableTempDir>();
 
   constructor(
     @Inject(DOCUMENT_STORAGE_REPOSITORY)
@@ -65,8 +69,11 @@ export class AskMeService {
     }
 
     const sourceId = randomUUID();
-    const sourceBaseDir = path.join(this.tempRootDir, sourceId);
-    await fs.mkdir(sourceBaseDir, { recursive: true });
+    const disposableTempDir = await this.createDisposableTempDir(
+      path.join(tmpdir(), SOURCE_TEMP_PREFIX),
+    );
+    const sourceBaseDir = disposableTempDir.path;
+    this.sourceTempDirs.set(sourceId, disposableTempDir);
 
     const sourceType: SourceType = hasFile ? 'zip' : 'github';
     let extractedPath: string;
@@ -78,7 +85,7 @@ export class AskMeService {
             input.githubUrl!.trim(),
           );
     } catch (error: unknown) {
-      await this.cleanupSourceFolder(sourceBaseDir);
+      await this.cleanupTempDir(sourceId, sourceBaseDir);
       const reason = error instanceof Error ? error.message : 'Unknown error';
       this.logger.warn(`Unable to fetch source: ${reason}`);
       throw new BadRequestException(`Source fetch failed: ${reason}`);
@@ -86,15 +93,21 @@ export class AskMeService {
 
     const sourceRecord: SourceRecord = {
       sourceId,
+      tempDir: sourceBaseDir,
       sourcePath: extractedPath,
       sourceType,
       status: 'ready',
       createdAt: new Date().toISOString(),
     };
-    await this.documentStorageRepository.setDocument(
-      this.buildSourceKey(sourceId),
-      sourceRecord,
-    );
+    try {
+      await this.documentStorageRepository.setDocument(
+        this.buildSourceKey(sourceId),
+        sourceRecord,
+      );
+    } catch (error: unknown) {
+      await this.cleanupTempDir(sourceId, sourceBaseDir);
+      throw error;
+    }
 
     return {
       sourceId,
@@ -113,10 +126,14 @@ export class AskMeService {
       throw new BadRequestException('sourceId is required.');
     }
 
-    const sourceRecord =
-      await this.documentStorageRepository.getDocument<SourceRecord>(
+    const rawSourceRecord =
+      await this.documentStorageRepository.getDocument<unknown>(
         this.buildSourceKey(request.sourceId),
       );
+    const sourceRecord = this.parseSourceRecord(
+      rawSourceRecord,
+      request.sourceId,
+    );
     if (!sourceRecord) {
       throw new NotFoundException(`Unknown sourceId: ${request.sourceId}`);
     }
@@ -133,17 +150,58 @@ export class AskMeService {
         sourceRecord.sourcePath,
         request.skipCache,
       );
+      await this.documentStorageRepository.setDocument(
+        this.buildSourceScanKey(request.sourceId),
+        {
+          sourceId: request.sourceId,
+          requestId: request.requestId,
+          scannedAt: new Date().toISOString(),
+          response,
+        },
+      );
       sourceRecord.status = 'scanned';
       await this.documentStorageRepository.setDocument(
         this.buildSourceKey(request.sourceId),
         sourceRecord,
       );
-      return response;
-    } finally {
-      const sourceRoot = path.join(this.tempRootDir, request.sourceId);
-      await this.cleanupSourceFolder(sourceRoot);
+      const sourceTempDir = path.dirname(sourceRecord.sourcePath);
+      await this.cleanupTempDir(request.sourceId, sourceTempDir);
       await this.deleteSourceRecord(request.sourceId);
+      return response;
+    } catch (error: unknown) {
+      sourceRecord.status = 'ready';
+      await this.documentStorageRepository.setDocument(
+        this.buildSourceKey(request.sourceId),
+        sourceRecord,
+      );
+      throw error;
     }
+  }
+
+  async getSourceStatus(sourceId: string): Promise<SourceStatusResponse> {
+    const normalizedSourceId = sourceId.trim();
+    if (!normalizedSourceId) {
+      throw new BadRequestException('sourceId is required.');
+    }
+
+    const [sourceRecord, scanRecord] = await Promise.all([
+      this.documentStorageRepository.getDocument<unknown>(
+        this.buildSourceKey(normalizedSourceId),
+      ),
+      this.getStoredScanResult(normalizedSourceId),
+    ]);
+    const parsedSourceRecord = this.parseSourceRecord(
+      sourceRecord,
+      normalizedSourceId,
+    );
+
+    return {
+      sourceId: normalizedSourceId,
+      sourceExists: Boolean(parsedSourceRecord),
+      sourceStatus: parsedSourceRecord?.status ?? null,
+      hasScanRecord: Boolean(scanRecord),
+      scanResponse: scanRecord?.response ?? null,
+    };
   }
 
   private async extractUploadedArchive(
@@ -266,8 +324,73 @@ export class AskMeService {
     return extractionTarget;
   }
 
-  private async cleanupSourceFolder(sourceRoot: string): Promise<void> {
+  private async cleanupTempDir(
+    sourceId: string,
+    sourceRoot: string,
+  ): Promise<void> {
+    const disposableTempDir = this.sourceTempDirs.get(sourceId);
+    this.sourceTempDirs.delete(sourceId);
+    if (disposableTempDir) {
+      await disposableTempDir.remove();
+      return;
+    }
+
     await fs.rm(sourceRoot, { recursive: true, force: true });
+  }
+
+  private async createDisposableTempDir(
+    prefix: string,
+  ): Promise<DisposableTempDir> {
+    const tempPath = await fs.mkdtemp(prefix);
+    return {
+      path: tempPath,
+      remove: () => fs.rm(tempPath, { recursive: true, force: true }),
+    };
+  }
+
+  private parseSourceRecord(
+    value: unknown,
+    fallbackSourceId: string,
+  ): SourceRecord | null {
+    if (!value || typeof value !== 'object') {
+      return null;
+    }
+
+    const record = value as Record<string, unknown>;
+    const sourcePath =
+      typeof record.sourcePath === 'string' ? record.sourcePath : null;
+    if (!sourcePath || sourcePath.length === 0) {
+      return null;
+    }
+
+    const tempDir =
+      typeof record.tempDir === 'string' && record.tempDir.length > 0
+        ? record.tempDir
+        : path.dirname(sourcePath);
+    const sourceType: SourceType =
+      record.sourceType === 'github' ? 'github' : 'zip';
+    const statusRecord = record.status;
+    const status: SourceRecord['status'] =
+      statusRecord === 'scanning' || statusRecord === 'scanned'
+        ? statusRecord
+        : 'ready';
+    const createdAt =
+      typeof record.createdAt === 'string' && record.createdAt.length > 0
+        ? record.createdAt
+        : new Date().toISOString();
+    const sourceId =
+      typeof record.sourceId === 'string' && record.sourceId.length > 0
+        ? record.sourceId
+        : fallbackSourceId;
+
+    return {
+      sourceId,
+      tempDir,
+      sourcePath,
+      sourceType,
+      status,
+      createdAt,
+    };
   }
 
   private async deleteSourceRecord(sourceId: string): Promise<void> {
@@ -286,5 +409,23 @@ export class AskMeService {
 
   private buildSourceKey(sourceId: string): string {
     return `${SOURCE_KEY_PREFIX}:${sourceId}`;
+  }
+
+  private buildSourceScanKey(sourceId: string): string {
+    return `${SOURCE_SCAN_KEY_PREFIX}:${sourceId}`;
+  }
+
+  private getStoredScanResult(sourceId: string): Promise<{
+    sourceId: string;
+    requestId: string;
+    scannedAt: string;
+    response: VulnerabilityScanTriggerResponse;
+  } | null> {
+    return this.documentStorageRepository.getDocument<{
+      sourceId: string;
+      requestId: string;
+      scannedAt: string;
+      response: VulnerabilityScanTriggerResponse;
+    }>(this.buildSourceScanKey(sourceId));
   }
 }

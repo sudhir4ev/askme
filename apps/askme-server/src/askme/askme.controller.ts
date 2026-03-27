@@ -1,13 +1,19 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AskMeService } from './askme.service';
-import type { SourceFetchResponse, SourceScanRequest } from './askme.types';
+import type {
+  SourceFetchResponse,
+  SourceScanRequest,
+  SourceStatusResponse,
+} from './askme.types';
 import type { VulnerabilityScanTriggerResponse } from '../vulnerability-scan/vulnerability-scan.service';
 
 @Controller('askme/source')
@@ -41,5 +47,12 @@ export class AskMeController {
     @Body() body: SourceScanRequest,
   ): Promise<VulnerabilityScanTriggerResponse> {
     return this.askMeService.scanSource(body);
+  }
+
+  @Get(':sourceId/status')
+  getSourceStatus(
+    @Param('sourceId') sourceId: string,
+  ): Promise<SourceStatusResponse> {
+    return this.askMeService.getSourceStatus(sourceId);
   }
 }
