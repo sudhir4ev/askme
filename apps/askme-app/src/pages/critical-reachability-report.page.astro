@@ -1,0 +1,468 @@
+---
+import FilterBar from '../components/composite/FilterBar.astro'
+import ReportPageLayout from '../components/layout/ReportPageLayout.astro'
+import StatTile from '../components/domain/StatTile.astro'
+import VulnerabilityItem from '../components/domain/VulnerabilityItem.astro'
+import Button from '../components/ui/Button.astro'
+import { Download } from '@lucide/astro'
+import { calculateBaseScore } from 'cvss4'
+
+interface VulnerabilitySeverity {
+   type: string
+   score: string | number
+}
+
+interface ParsedPackageVulnerability {
+   id: string
+   aliases: string[]
+   summary: string | null
+   details: string | null
+   severity: VulnerabilitySeverity[] | VulnerabilitySeverity | null | undefined
+}
+
+interface VulnerableSnippet {
+   filePath: string
+   line: number
+   column: number
+   snippet: string
+   contextBefore: string[]
+   contextAfter: string[]
+}
+
+interface ImpactAssessment {
+   summary: string
+   remediation?: string
+   impactScore: number
+   impactLevel: 'low' | 'medium' | 'high' | 'critical'
+   impactDescription?: string
+   impactRecommendation?: string
+}
+
+interface VulnerabilityByPackage {
+   packageName: string
+   packageVersion?: string | null
+   vulnerabilities: ParsedPackageVulnerability[]
+   vulnerableSnippets: VulnerableSnippet[]
+   impactAssessment?: ImpactAssessment
+}
+
+interface VulnerabilityScanTriggerResponse {
+   sourcePath: string
+   scannedPackages: number
+   vulnerablePackages: number
+   vulnerabilities: VulnerabilityByPackage[]
+}
+
+type UiSeverity = 'critical' | 'high' | 'medium'
+type UiReachability = 'reachable' | 'not-reachable'
+type UiSeverityRating = 'Critical' | 'High' | 'Medium'
+
+interface UiVulnerabilityEntry {
+   cve: string
+   severity: UiSeverity
+   severityScore?: string
+   severityRating: UiSeverityRating
+   description: string
+   remediation: string
+}
+
+interface UiPackageVulnerabilityItem {
+   library: string
+   version: string
+   reachability: UiReachability
+   vulnerabilities: UiVulnerabilityEntry[]
+   highestSeverity: UiSeverity
+   highestSeverityScore?: string
+   highestSeverityRating: UiSeverityRating
+   impactAssessment?: {
+      summary: string
+      impactScore: number
+      impactLevel: 'low' | 'medium' | 'high' | 'critical'
+      impactDescription?: string
+      impactRecommendation?: string
+   }
+   proof?: {
+      file: string
+      line: number
+      lines: string[]
+   }
+}
+
+const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL ?? 'http://localhost:3000'
+const sourcePath = '/Users/sudhir/Downloads/Node.js-Vulnerable-main'
+const requestId = typeof crypto?.randomUUID === 'function'
+   ? crypto.randomUUID()
+   : `req-${Date.now()}`
+
+const defaultResponse: VulnerabilityScanTriggerResponse = {
+   sourcePath,
+   scannedPackages: 0,
+   vulnerablePackages: 0,
+   vulnerabilities: [],
+}
+
+let scanResponse: VulnerabilityScanTriggerResponse = defaultResponse
+let scanError: string | null = null
+
+try {
+   const response = await fetch(`${API_BASE_URL}/vulnerability-scan/scan`, {
+      method: 'POST',
+      headers: {
+         'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+         requestId,
+         sourcePath,
+         skipCache: false,
+      }),
+   })
+
+   if (!response.ok) {
+      throw new Error(`scan request failed: ${response.status}`)
+   }
+
+   scanResponse = (await response.json()) as VulnerabilityScanTriggerResponse
+} catch (error) {
+   scanError = error instanceof Error ? error.message : 'Scan request failed'
+}
+
+function extractScoreValue(score: string | number): number | null {
+   if (typeof score === 'number' && Number.isFinite(score)) {
+      return score
+   }
+
+   if (typeof score !== 'string') {
+      return null
+   }
+
+   const direct = Number.parseFloat(score)
+   if (Number.isFinite(direct)) {
+      return direct
+   }
+
+   const match = score.match(/(\d+(?:\.\d+)?)/)
+   if (!match) {
+      return null
+   }
+
+   const numericToken = match[1]
+   if (!numericToken) {
+      return null
+   }
+
+   const parsed = Number.parseFloat(numericToken)
+   return Number.isFinite(parsed) ? parsed : null
+}
+
+function toSeverityEntries(
+   severity: ParsedPackageVulnerability['severity'],
+): VulnerabilitySeverity[] {
+   if (Array.isArray(severity)) {
+      return severity.filter(
+         (entry): entry is VulnerabilitySeverity =>
+            Boolean(entry) &&
+            typeof entry === 'object' &&
+            typeof entry.type === 'string' &&
+            (typeof entry.score === 'string' || typeof entry.score === 'number'),
+      )
+   }
+
+   if (
+      severity &&
+      typeof severity === 'object' &&
+      (typeof severity.score === 'string' || typeof severity.score === 'number')
+   ) {
+      return [
+         {
+            type:
+               typeof severity.type === 'string' ? severity.type : 'unknown',
+            score: severity.score,
+         },
+      ]
+   }
+
+   return []
+}
+
+function getCvssNumericScore(rawScore: string | number): number | null {
+   if (typeof rawScore === 'string') {
+      const trimmed = rawScore.trim()
+      if (trimmed.length > 0) {
+         try {
+            const score = calculateBaseScore(trimmed)
+            if (Number.isFinite(score)) {
+               return score
+            }
+         } catch {
+            // Non-vector values are handled by numeric parsing fallback.
+         }
+      }
+   }
+
+   return extractScoreValue(rawScore)
+}
+
+function mapSeverityFromScore(score: number): UiSeverity {
+   if (score >= 9) {
+      return 'critical'
+   }
+   if (score >= 7) {
+      return 'high'
+   }
+   return 'medium'
+}
+
+function toSeverityRating(severity: UiSeverity): UiSeverityRating {
+   if (severity === 'critical') {
+      return 'Critical'
+   }
+   if (severity === 'high') {
+      return 'High'
+   }
+   return 'Medium'
+}
+
+function getSeverityData(
+   vulnerability: ParsedPackageVulnerability,
+   impactAssessment?: ImpactAssessment,
+): Pick<UiVulnerabilityEntry, 'severity' | 'severityScore' | 'severityRating'> {
+   const maxScore = toSeverityEntries(vulnerability.severity).reduce<number | null>((currentMax, entry) => {
+      const value = getCvssNumericScore(entry.score)
+      if (value === null) {
+         return currentMax
+      }
+      if (currentMax === null) {
+         return value
+      }
+      return value > currentMax ? value : currentMax
+   }, null)
+
+   if (maxScore !== null) {
+      const normalized = Math.max(0, Math.min(10, maxScore))
+      const severity = mapSeverityFromScore(normalized)
+      return {
+         severity,
+         severityScore: normalized.toFixed(1),
+         severityRating: toSeverityRating(severity),
+      }
+   }
+
+   if (impactAssessment?.impactLevel === 'critical' || impactAssessment?.impactLevel === 'high') {
+      const severity = impactAssessment.impactLevel === 'critical' ? 'critical' : 'high'
+      return {
+         severity,
+         severityScore: undefined,
+         severityRating: toSeverityRating(severity),
+      }
+   }
+
+   return {
+      severity: 'medium',
+      severityScore: undefined,
+      severityRating: 'Medium',
+   }
+}
+
+function getCve(vulnerability: ParsedPackageVulnerability): string {
+   const cveAlias = vulnerability.aliases.find((alias) => alias.startsWith('CVE-'))
+   return cveAlias ?? vulnerability.id
+}
+
+function toVersionLabel(version?: string | null): string {
+   if (!version) {
+      return 'unknown'
+   }
+   return version.startsWith('v') ? version : `v${version}`
+}
+
+function buildProof(snippets: VulnerableSnippet[]): UiPackageVulnerabilityItem['proof'] {
+   const firstSnippet = snippets[0]
+   if (!firstSnippet) {
+      return undefined
+   }
+
+   const before = firstSnippet.contextBefore ?? []
+   const after = firstSnippet.contextAfter ?? []
+   const contentLines = [...before, firstSnippet.snippet, ...after]
+   const startLine = Math.max(1, firstSnippet.line - before.length)
+   const lines = contentLines.map((content, index) => `${startLine + index}  ${content}`)
+
+   return {
+      file: firstSnippet.filePath,
+      line: firstSnippet.line,
+      lines,
+   }
+}
+
+function getHighestSeverity(
+   vulnerabilities: UiVulnerabilityEntry[],
+): Pick<UiPackageVulnerabilityItem, 'highestSeverity' | 'highestSeverityScore' | 'highestSeverityRating'> {
+   const severityOrder: Record<UiSeverity, number> = {
+      critical: 3,
+      high: 2,
+      medium: 1,
+   }
+
+   const highest = vulnerabilities.reduce<UiVulnerabilityEntry | null>((current, item) => {
+      if (!current) {
+         return item
+      }
+
+      if (severityOrder[item.severity] > severityOrder[current.severity]) {
+         return item
+      }
+
+      if (severityOrder[item.severity] === severityOrder[current.severity]) {
+         const itemScore = Number(item.severityScore ?? 0)
+         const currentScore = Number(current.severityScore ?? 0)
+         return itemScore > currentScore ? item : current
+      }
+
+      return current
+   }, null)
+
+   if (!highest) {
+      return {
+         highestSeverity: 'medium',
+         highestSeverityScore: undefined,
+         highestSeverityRating: 'Medium',
+      }
+   }
+
+   return {
+      highestSeverity: highest.severity,
+      highestSeverityScore: highest.severityScore,
+      highestSeverityRating: highest.severityRating,
+   }
+}
+
+const uiVulnerabilitiesByPackage: UiPackageVulnerabilityItem[] = scanResponse.vulnerabilities.map((packageEntry) => {
+   const reachability: UiReachability =
+      packageEntry.vulnerableSnippets.length > 0 ? 'reachable' : 'not-reachable'
+   const proof = buildProof(packageEntry.vulnerableSnippets)
+
+   const vulnerabilities = packageEntry.vulnerabilities.map((vulnerability) => {
+      const severityData = getSeverityData(
+         vulnerability,
+         packageEntry.impactAssessment,
+      )
+
+      return {
+         cve: getCve(vulnerability),
+         severity: severityData.severity,
+         severityScore: severityData.severityScore,
+         severityRating: severityData.severityRating,
+         description:
+            vulnerability.summary ??
+            vulnerability.details ??
+            'No vulnerability description provided.',
+         remediation:
+            packageEntry.impactAssessment?.remediation ??
+            'Upgrade to a non-vulnerable version and validate impacted usage paths.',
+      }
+   })
+
+   const highestSeverityData = getHighestSeverity(vulnerabilities)
+
+   return {
+      library: packageEntry.packageName,
+      version: toVersionLabel(packageEntry.packageVersion),
+      reachability,
+      vulnerabilities,
+      highestSeverity: highestSeverityData.highestSeverity,
+      highestSeverityScore: highestSeverityData.highestSeverityScore,
+      highestSeverityRating: highestSeverityData.highestSeverityRating,
+      impactAssessment: packageEntry.impactAssessment
+         ? {
+              summary: packageEntry.impactAssessment.summary,
+              impactScore: packageEntry.impactAssessment.impactScore,
+              impactLevel: packageEntry.impactAssessment.impactLevel,
+              impactDescription: packageEntry.impactAssessment.impactDescription,
+              impactRecommendation:
+                 packageEntry.impactAssessment.impactRecommendation,
+           }
+         : undefined,
+      proof,
+   }
+})
+
+const vulnerabilityEntries = uiVulnerabilitiesByPackage.flatMap(
+   (item) => item.vulnerabilities,
+)
+
+const vulnerabilitiesDetected = vulnerabilityEntries.length
+const reachableRisks = scanResponse.vulnerabilities.filter(
+   (packageEntry) => packageEntry.vulnerableSnippets.length > 0,
+).length
+const criticalCount = vulnerabilityEntries.filter((item) => item.severity === 'critical').length
+const highCount = vulnerabilityEntries.filter((item) => item.severity === 'high').length
+const securityPosture = reachableRisks > 0 ? 'Critical' : 'Elevated'
+const securityPostureHint =
+   reachableRisks > 0 ? 'Reachable vulnerabilities found' : 'No reachable vulnerabilities detected'
+---
+
+<ReportPageLayout
+   pageTitle="Critical Reachability Report"
+   headerTitle="Dependency-Core-V1"
+   headerSubtitle={`Source: ${scanResponse.sourcePath}`}
+   sidebarActive="critical"
+   topActive="inventory"
+   topSearchPlaceholder="Search libraries..."
+>
+   <Button slot="actions" variant="secondary">
+      <Download size={16} />
+      Download Report
+   </Button>
+
+   <section class="mb-4 grid grid-cols-1 gap-3 xl:grid-cols-4">
+      <StatTile label="Total Dependencies" value={scanResponse.scannedPackages} hint={`${scanResponse.vulnerablePackages} vulnerable packages`} tone="success" />
+      <StatTile label="Vulnerabilities Detected" value={vulnerabilitiesDetected} hint={`${criticalCount} critical, ${highCount} high`} />
+      <StatTile label="Reachable Risks" value={reachableRisks} hint={reachableRisks > 0 ? 'Immediate action' : 'No immediate reachability'} tone={reachableRisks > 0 ? 'critical' : 'success'} />
+      <StatTile label="Security Posture" value={securityPosture} hint={securityPostureHint} tone={securityPosture === 'Critical' ? 'critical' : 'medium'} />
+   </section>
+
+   <FilterBar
+      tabItems={[
+         { key: 'reachable', label: 'Reachable' },
+         { key: 'all', label: 'All' },
+      ]}
+      activeTab="reachable"
+      searchPlaceholder="Search libraries..."
+      showSeverity={true}
+   />
+
+   <section class="mt-4 grid gap-3">
+      {scanError && (
+         <p class="rounded-sm border border-[#fecaca] bg-[#fef2f2] px-3 py-2 text-sm text-[#991b1b]">
+            Unable to load vulnerability scan: {scanError}
+         </p>
+      )}
+      {!scanError && uiVulnerabilitiesByPackage.length === 0 && (
+         <p class="rounded-sm border border-(--color-border) bg-(--color-bg-secondary) px-3 py-2 text-sm text-(--color-text-secondary)">
+            No vulnerabilities were returned for the configured source path.
+         </p>
+      )}
+      {uiVulnerabilitiesByPackage.map((item, index) => (
+         <VulnerabilityItem
+            library={item.library}
+            version={item.version}
+            severity={item.highestSeverity}
+            severityScore={item.highestSeverityScore}
+            severityRating={item.highestSeverityRating}
+            reachability={item.reachability}
+            vulnerabilities={item.vulnerabilities}
+            impactAssessment={item.impactAssessment}
+            proof={item.proof}
+            expanded={index === 0}
+         />
+      ))}
+   </section>
+
+   <div class="mt-4 grid place-items-center">
+      <Button variant="secondary">Load More Results</Button>
+   </div>
+
+   <Button variant="fab" class="fixed right-6 bottom-6" aria-label="Download report">
+      <span class="material-symbols-outlined">ios_share</span>
+   </Button>
+</ReportPageLayout>
