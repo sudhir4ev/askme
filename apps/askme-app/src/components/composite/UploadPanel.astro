@@ -3,6 +3,8 @@ import Button from "../ui/Button.astro";
 import Card from "../ui/Card.astro";
 import Input from "../ui/Input.astro";
 import { Link } from "@lucide/astro";
+
+const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL ?? "http://localhost:3000";
 ---
 
 <Card padding="lg">
@@ -17,7 +19,7 @@ import { Link } from "@lucide/astro";
 			class="absolute h-px w-px overflow-hidden border-0 p-0"
 			data-dropzone-input
 			type="file"
-			accept=".zip,.tar,.tar.gz,.tgz"
+			accept=".zip"
 		/>
 		<span
 			class="pointer-events-none absolute inset-0 grid place-items-center font-mono text-[1.05rem] uppercase tracking-[0.08em] text-[#1d4ed8] opacity-0 transition"
@@ -29,7 +31,7 @@ import { Link } from "@lucide/astro";
 		<span class="material-symbols-outlined relative z-10 text-[2.2rem] text-[#2563eb]">upload_file</span>
 		<strong class="relative z-10 block text-[0.9rem]" data-dropzone-title>Click to upload or drag and drop</strong>
 		<small class="relative z-10 font-mono text-[var(--color-muted)]">
-			ZIP, TAR.GZ (MAX. 500MB)
+			ZIP (MAX. 500MB)
 		</small>
 		<small
 			class="relative z-10 min-h-[1em] font-mono text-[0.72rem] text-[var(--color-muted)]"
@@ -45,19 +47,55 @@ import { Link } from "@lucide/astro";
 	</div>
 
 	<div class="grid gap-3">
-		<Input icon={Link} placeholder="https://github.com/username/repository" />
-		<Button variant="gradient" size="lg" fullWidth={true}>
+		<Input
+			icon={Link}
+			type="url"
+			placeholder="https://github.com/username/repository"
+			name="githubUrl"
+		/>
+		<Button variant="gradient" size="lg" fullWidth={true} data-start-scan>
 			<span class="material-symbols-outlined">rocket_launch</span>
 			Start Scan
 		</Button>
+		<p
+			class="min-h-[1rem] text-xs text-[var(--color-text-secondary)]"
+			data-upload-status
+			data-api-base-url={API_BASE_URL}
+			aria-live="polite"
+		></p>
 	</div>
 </Card>
 
 <script>
+	const statusEl = document.querySelector<HTMLElement>("[data-upload-status]");
+	const startScanButton = document.querySelector<HTMLButtonElement>("[data-start-scan]");
+	const githubInput = document.querySelector<HTMLInputElement>('input[name="githubUrl"]');
+	const apiBaseUrl = statusEl?.dataset.apiBaseUrl ?? "http://localhost:3000";
 	const zones = document.querySelectorAll<HTMLElement>("[data-dropzone]");
 	const dragStateClasses = ["border-[#2563eb]", "bg-[#dbeafe]", "-translate-y-px", "before:opacity-100"];
 	const hasFileClasses = ["border-[#2563eb]", "bg-[#f8fbff]"];
 	const hoverClasses = ["hover:border-[#60a5fa]", "hover:bg-[#eff6ff]", "focus-visible:border-[#60a5fa]", "focus-visible:bg-[#eff6ff]"];
+	let selectedFile: File | null = null;
+	let isSubmitting = false;
+
+	const setStatus = (message: string, isError = false) => {
+		if (!statusEl) {
+			return;
+		}
+		statusEl.textContent = message;
+		statusEl.classList.toggle("text-[#b91c1c]", isError);
+		statusEl.classList.toggle("text-[var(--color-text-secondary)]", !isError);
+	};
+
+	const setSubmittingState = (submitting: boolean) => {
+		isSubmitting = submitting;
+		if (!startScanButton) {
+			return;
+		}
+		startScanButton.disabled = submitting;
+		startScanButton.classList.toggle("opacity-70", submitting);
+		startScanButton.classList.toggle("cursor-not-allowed", submitting);
+	};
 
 	const setFileState = (zone: HTMLElement, file: File | null) => {
 		const title = zone.querySelector<HTMLElement>("[data-dropzone-title]");
@@ -67,10 +105,14 @@ import { Link } from "@lucide/astro";
 			return;
 		}
 
+		selectedFile = file;
 		if (file) {
 			zone.classList.add(...hasFileClasses);
 			title.textContent = "File selected";
 			fileText.textContent = file.name;
+			if (githubInput) {
+				githubInput.value = "";
+			}
 			return;
 		}
 
@@ -78,6 +120,69 @@ import { Link } from "@lucide/astro";
 		title.textContent = "Click to upload or drag and drop";
 		fileText.textContent = "";
 	};
+
+	const startScan = async () => {
+		if (isSubmitting) {
+			return;
+		}
+
+		const githubUrl = githubInput?.value.trim() ?? "";
+		if (!selectedFile && githubUrl.length === 0) {
+			setStatus("Choose a zip file or provide a public GitHub URL.", true);
+			return;
+		}
+		if (selectedFile && githubUrl.length > 0) {
+			setStatus("Use either file upload or GitHub URL, not both.", true);
+			return;
+		}
+
+		try {
+			setSubmittingState(true);
+			setStatus("Fetching source...");
+
+			const fetchResponse = selectedFile
+				? await fetch(`${apiBaseUrl}/askme/source/fetch`, {
+						method: "POST",
+						body: (() => {
+							const formData = new FormData();
+							formData.append("file", selectedFile);
+							return formData;
+						})(),
+					})
+				: await fetch(`${apiBaseUrl}/askme/source/fetch`, {
+						method: "POST",
+						headers: {
+							"content-type": "application/json",
+						},
+						body: JSON.stringify({ githubUrl }),
+					});
+
+			if (!fetchResponse.ok) {
+				throw new Error(`Fetch source failed: ${fetchResponse.status}`);
+			}
+
+			const payload = (await fetchResponse.json()) as {
+				sourceId?: string;
+			};
+			if (!payload.sourceId) {
+				throw new Error("Missing sourceId in fetch response.");
+			}
+
+			setStatus("Source ready. Starting scan...");
+			window.location.assign(
+				`/${encodeURIComponent(payload.sourceId)}/critical_reachability_report`,
+			);
+		} catch (error) {
+			const message =
+				error instanceof Error ? error.message : "Unable to fetch source.";
+			setStatus(message, true);
+			setSubmittingState(false);
+		}
+	};
+
+	startScanButton?.addEventListener("click", () => {
+		void startScan();
+	});
 
 	zones.forEach((zone) => {
 		const input = zone.querySelector<HTMLInputElement>("[data-dropzone-input]");
@@ -96,7 +201,8 @@ import { Link } from "@lucide/astro";
 		});
 
 		input.addEventListener("change", () => {
-			const file = input.files && input.files.length > 0 ? input.files[0] : null;
+			const file =
+				input.files && input.files.length > 0 ? (input.files[0] ?? null) : null;
 			setFileState(zone, file);
 		});
 
@@ -130,10 +236,26 @@ import { Link } from "@lucide/astro";
 			}
 
 			const droppedFile = droppedFiles[0];
+			if (!droppedFile) {
+				setFileState(zone, null);
+				return;
+			}
 			const dataTransfer = new DataTransfer();
 			dataTransfer.items.add(droppedFile);
 			input.files = dataTransfer.files;
 			setFileState(zone, droppedFile);
 		});
+	});
+
+	githubInput?.addEventListener("input", () => {
+		if (!githubInput.value.trim()) {
+			return;
+		}
+		const input = document.querySelector<HTMLInputElement>("[data-dropzone-input]");
+		if (input) {
+			input.value = "";
+		}
+		selectedFile = null;
+		zones.forEach((zone) => setFileState(zone, null));
 	});
 </script>

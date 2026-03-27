@@ -37,6 +37,11 @@ export class RedisDocumentStorageRepository
     await this.client.set(key, JSON.stringify(value));
   }
 
+  async deleteDocument(key: string): Promise<void> {
+    await this.ensureConnected();
+    await this.client.del(key);
+  }
+
   async onModuleDestroy(): Promise<void> {
     if (this.client.isOpen) {
       await this.client.quit();

@@ -53,6 +53,14 @@ interface VulnerabilityScanTriggerResponse {
    vulnerabilities: VulnerabilityByPackage[]
 }
 
+interface SourceStatusResponse {
+   sourceId: string
+   sourceExists: boolean
+   sourceStatus: 'ready' | 'scanning' | 'scanned' | null
+   hasScanRecord: boolean
+   scanResponse: VulnerabilityScanTriggerResponse | null
+}
+
 type UiSeverity = 'critical' | 'high' | 'medium'
 type UiReachability = 'reachable' | 'not-reachable'
 type UiSeverityRating = 'Critical' | 'High' | 'Medium'
@@ -88,14 +96,19 @@ interface UiPackageVulnerabilityItem {
    }
 }
 
+interface Props {
+   sourceId?: string
+}
+
+const { sourceId: sourceIdProp = '' } = Astro.props as Props
 const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL ?? 'http://localhost:3000'
-const sourcePath = '/Users/sudhir/Downloads/Node.js-Vulnerable-main'
+const sourceId = sourceIdProp.trim() || Astro.url.searchParams.get('sourceId')?.trim() || ''
 const requestId = typeof crypto?.randomUUID === 'function'
    ? crypto.randomUUID()
    : `req-${Date.now()}`
 
 const defaultResponse: VulnerabilityScanTriggerResponse = {
-   sourcePath,
+   sourcePath: sourceId ? `source:${sourceId}` : 'source:unknown',
    scannedPackages: 0,
    vulnerablePackages: 0,
    vulnerabilities: [],
@@ -103,27 +116,35 @@ const defaultResponse: VulnerabilityScanTriggerResponse = {
 
 let scanResponse: VulnerabilityScanTriggerResponse = defaultResponse
 let scanError: string | null = null
+let sourceStatus: SourceStatusResponse | null = null
+let isSourceReadyWithoutScan = false
 
-try {
-   const response = await fetch(`${API_BASE_URL}/vulnerability-scan/scan`, {
-      method: 'POST',
-      headers: {
-         'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-         requestId,
-         sourcePath,
-         skipCache: false,
-      }),
-   })
+if (!sourceId) {
+   scanError = 'Missing sourceId. Start a new scan from the upload page.'
+} else {
+   try {
+      const statusResponse = await fetch(`${API_BASE_URL}/askme/source/${encodeURIComponent(sourceId)}/status`)
+      if (!statusResponse.ok) {
+         throw new Error(`source status request failed: ${statusResponse.status}`)
+      }
+      sourceStatus = (await statusResponse.json()) as SourceStatusResponse
 
-   if (!response.ok) {
-      throw new Error(`scan request failed: ${response.status}`)
+      isSourceReadyWithoutScan =
+         sourceStatus.sourceExists &&
+         sourceStatus.sourceStatus === 'ready' &&
+         !sourceStatus.hasScanRecord
+
+      if (sourceStatus.hasScanRecord) {
+         if (!sourceStatus.scanResponse) {
+            throw new Error('scan record exists but response payload is missing')
+         }
+         scanResponse = sourceStatus.scanResponse
+      } else if (!isSourceReadyWithoutScan) {
+         scanError = 'No scan data found for this source. Start a new scan from the upload page.'
+      }
+   } catch (error) {
+      scanError = error instanceof Error ? error.message : 'Scan request failed'
    }
-
-   scanResponse = (await response.json()) as VulnerabilityScanTriggerResponse
-} catch (error) {
-   scanError = error instanceof Error ? error.message : 'Scan request failed'
 }
 
 function extractScoreValue(score: string | number): number | null {
@@ -414,35 +435,64 @@ const securityPostureHint =
       Download Report
    </Button>
 
-   <section class="mb-4 grid grid-cols-1 gap-3 xl:grid-cols-4">
-      <StatTile label="Total Dependencies" value={scanResponse.scannedPackages} hint={`${scanResponse.vulnerablePackages} vulnerable packages`} tone="success" />
-      <StatTile label="Vulnerabilities Detected" value={vulnerabilitiesDetected} hint={`${criticalCount} critical, ${highCount} high`} />
-      <StatTile label="Reachable Risks" value={reachableRisks} hint={reachableRisks > 0 ? 'Immediate action' : 'No immediate reachability'} tone={reachableRisks > 0 ? 'critical' : 'success'} />
-      <StatTile label="Security Posture" value={securityPosture} hint={securityPostureHint} tone={securityPosture === 'Critical' ? 'critical' : 'medium'} />
-   </section>
+   {!isSourceReadyWithoutScan && (
+      <>
+         <section class="mb-4 grid grid-cols-1 gap-3 xl:grid-cols-4">
+            <StatTile label="Total Dependencies" value={scanResponse.scannedPackages} hint={`${scanResponse.vulnerablePackages} vulnerable packages`} tone="success" />
+            <StatTile label="Vulnerabilities Detected" value={vulnerabilitiesDetected} hint={`${criticalCount} critical, ${highCount} high`} />
+            <StatTile label="Reachable Risks" value={reachableRisks} hint={reachableRisks > 0 ? 'Immediate action' : 'No immediate reachability'} tone={reachableRisks > 0 ? 'critical' : 'success'} />
+            <StatTile label="Security Posture" value={securityPosture} hint={securityPostureHint} tone={securityPosture === 'Critical' ? 'critical' : 'medium'} />
+         </section>
 
-   <FilterBar
-      tabItems={[
-         { key: 'reachable', label: 'Reachable' },
-         { key: 'all', label: 'All' },
-      ]}
-      activeTab="reachable"
-      searchPlaceholder="Search libraries..."
-      showSeverity={true}
-   />
+         <FilterBar
+            tabItems={[
+               { key: 'reachable', label: 'Reachable' },
+               { key: 'all', label: 'All' },
+            ]}
+            activeTab="reachable"
+            searchPlaceholder="Search libraries..."
+            showSeverity={true}
+         />
+      </>
+   )}
 
    <section class="mt-4 grid gap-3">
+      {isSourceReadyWithoutScan && (
+         <div class="rounded-sm border border-(--color-border) bg-(--color-bg-secondary) px-4 py-4">
+            <p class="text-sm font-semibold text-(--color-text-primary)">
+               Source fetched successfully. Scan is work in progress.
+            </p>
+            <p class="mt-1 text-sm text-(--color-text-secondary)">
+               Click Start Scan to begin vulnerability analysis for source `{sourceId}`.
+            </p>
+            <div class="mt-3 flex items-center gap-3">
+               <Button
+                  variant="gradient"
+                  data-scan-button
+                  data-source-id={sourceId}
+                  data-api-base-url={API_BASE_URL}
+               >
+                  Start Scan
+               </Button>
+               <span
+                  class="text-xs text-(--color-text-secondary)"
+                  data-scan-status
+                  aria-live="polite"
+               ></span>
+            </div>
+         </div>
+      )}
       {scanError && (
          <p class="rounded-sm border border-[#fecaca] bg-[#fef2f2] px-3 py-2 text-sm text-[#991b1b]">
             Unable to load vulnerability scan: {scanError}
          </p>
       )}
-      {!scanError && uiVulnerabilitiesByPackage.length === 0 && (
+      {!scanError && !isSourceReadyWithoutScan && uiVulnerabilitiesByPackage.length === 0 && (
          <p class="rounded-sm border border-(--color-border) bg-(--color-bg-secondary) px-3 py-2 text-sm text-(--color-text-secondary)">
             No vulnerabilities were returned for the configured source path.
          </p>
       )}
-      {uiVulnerabilitiesByPackage.map((item, index) => (
+      {!isSourceReadyWithoutScan && uiVulnerabilitiesByPackage.map((item, index) => (
          <VulnerabilityItem
             library={item.library}
             version={item.version}
@@ -458,11 +508,59 @@ const securityPostureHint =
       ))}
    </section>
 
-   <div class="mt-4 grid place-items-center">
-      <Button variant="secondary">Load More Results</Button>
-   </div>
+   {!isSourceReadyWithoutScan && (
+      <div class="mt-4 grid place-items-center">
+         <Button variant="secondary">Load More Results</Button>
+      </div>
+   )}
 
    <Button variant="fab" class="fixed right-6 bottom-6" aria-label="Download report">
       <span class="material-symbols-outlined">ios_share</span>
    </Button>
 </ReportPageLayout>
+
+<script>
+   const scanButton = document.querySelector<HTMLButtonElement>('[data-scan-button]')
+   const scanStatus = document.querySelector<HTMLElement>('[data-scan-status]')
+
+   if (scanButton) {
+      scanButton.addEventListener('click', async () => {
+         const sourceId = scanButton.dataset.sourceId
+         const apiBaseUrl = scanButton.dataset.apiBaseUrl
+         if (!sourceId || !apiBaseUrl) {
+            return
+         }
+
+         scanButton.disabled = true
+         scanStatus && (scanStatus.textContent = 'Starting scan...')
+
+         try {
+            const requestId = typeof crypto?.randomUUID === 'function'
+               ? crypto.randomUUID()
+               : `req-${Date.now()}`
+            const response = await fetch(`${apiBaseUrl}/askme/source/scan`, {
+               method: 'POST',
+               headers: {
+                  'content-type': 'application/json',
+               },
+               body: JSON.stringify({
+                  requestId,
+                  sourceId,
+                  skipCache: false,
+               }),
+            })
+            if (!response.ok) {
+               throw new Error(`scan request failed: ${response.status}`)
+            }
+
+            window.location.reload()
+         } catch (error) {
+            const reason = error instanceof Error ? error.message : 'Scan request failed'
+            if (scanStatus) {
+               scanStatus.textContent = reason
+            }
+            scanButton.disabled = false
+         }
+      })
+   }
+</script>
