@@ -1,159 +1,54 @@
-# Turborepo starter
+# AskMe
 
-This Turborepo starter is maintained by the Turborepo core team.
+Monorepo for dependency vulnerability analysis with:
 
-## Using this example
+## Objective
 
-Run the following command:
+Analyze a source project for vulnerable dependencies and produce actionable, context-aware insights (what is vulnerable, where it is used, and likely impact).
 
-```sh
-npx create-turbo@latest
-```
+## How it works!
 
-## What's inside?
+- `apps/askme-server`: NestJS API that exposes vulnerability scan services.   
+   - scans dependencies (OSV) [google/osv-scanner](https://github.com/google/osv-scanner)
+   - extracts code usage context (AST) [tree-sitter](https://www.npmjs.com/package/tree-sitter),
+   - enriches vulnerabilities with impact analysis using CVE advisories and code snippets of exposed code snippet (Chroma + OpenAI).
+- `apps/askme-app`: Astro UI for presenting vulnerability reports.
 
-This Turborepo includes the following packages/apps:
+## Requirements
 
-### Apps and Packages
+- Node.js `>=22.12.0`
+- Redis (default `redis://localhost:6379`)
+- ChromaDB (default `http://localhost:8000`)
+- OpenAI API key (`OPENAI_API_KEY`)
+- OSV Scanner binary available locally (configured via `OSV_SCANNER_PATH`).
+   Check [google/osv-scanner/releases](https://github.com/google/osv-scanner/releases) for available binaries for your platform
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+## Run Locally
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+1. Install dependencies from repo root:
+   ```bash
+   pnpm install
+   ```
 
-### Utilities
+1. Configure backend env:
+   ```bash
+   cp apps/askme-server/.env.example apps/askme-server/.env
+   ```
+   Update values in `.env` (especially `OPENAI_API_KEY` and `OSV_SCANNER_PATH`).
 
-This Turborepo has some additional tools already setup for you:
+1. Start docker services
+   ```bash
+   docker compose up -d
+   ```
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+1. Download OSV Scanner binary. Configured .env `OSV_SCANNER_PATH` to downloaded binary.  
+   Check [google/osv-scanner/releases](https://github.com/google/osv-scanner/releases) for available binaries for your platform
 
-### Build
+1. Start apps:
+   ```bash
+   pnpm run dev
+   ```
+   starts frontend and backend dev services
+   - Frontend: `http://localhost:4321`
+   - API: `http://localhost:3000`
 
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo build
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
