@@ -1,6 +1,6 @@
 # AskMe
 
-Monorepo for dependency vulnerability analysis with:
+Monorepo for AI assisted Source Code analysis tools
 
 ## Objective
 
