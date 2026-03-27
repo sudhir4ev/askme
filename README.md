@@ -22,7 +22,7 @@ Analyze a source project for vulnerable dependencies and produce actionable, con
 - Redis (default `redis://localhost:6379`)
 - ChromaDB (default `http://localhost:8000`)
 - OpenAI API key (`OPENAI_API_KEY`)
-- OSV Scanner binary available locally (configured via `OSV_SCANNER_PATH`).
+- OSV Scanner binary available locally (configured via `OSV_SCANNER_PATH`). And its executable.
    Check [google/osv-scanner/releases](https://github.com/google/osv-scanner/releases) for available binaries for your platform
 
 ## Run Locally
@@ -45,6 +45,10 @@ Analyze a source project for vulnerable dependencies and produce actionable, con
 
 1. Download OSV Scanner binary. Configured .env `OSV_SCANNER_PATH` to downloaded binary.  
    Check [google/osv-scanner/releases](https://github.com/google/osv-scanner/releases) for available binaries for your platform
+   Make sure its executable
+   ```bash
+   chmod +x osv-scanner_darwin_arm64-v2.3.3
+   ```
 
 1. Start apps:
    ```bash
