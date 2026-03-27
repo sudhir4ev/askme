@@ -5,10 +5,11 @@ import StatTile from '../components/domain/StatTile.astro'
 import VulnerabilityItem from '../components/domain/VulnerabilityItem.astro'
 import Button from '../components/ui/Button.astro'
 import { Download } from '@lucide/astro'
+import { calculateBaseScore } from 'cvss4'
 
 interface VulnerabilitySeverity {
    type: string
-   score: string
+   score: string | number
 }
 
 interface ParsedPackageVulnerability {
@@ -16,7 +17,7 @@ interface ParsedPackageVulnerability {
    aliases: string[]
    summary: string | null
    details: string | null
-   severity: VulnerabilitySeverity[]
+   severity: VulnerabilitySeverity[] | VulnerabilitySeverity | null | undefined
 }
 
 interface VulnerableSnippet {
@@ -55,6 +56,8 @@ interface UiVulnerabilityItem {
    library: string
    version: string
    severity: UiSeverity
+   severityScore?: string
+   severityRating: 'Critical' | 'High' | 'Medium'
    reachability: UiReachability
    cve: string
    description: string
@@ -104,7 +107,15 @@ try {
    scanError = error instanceof Error ? error.message : 'Scan request failed'
 }
 
-function extractScoreValue(score: string): number | null {
+function extractScoreValue(score: string | number): number | null {
+   if (typeof score === 'number' && Number.isFinite(score)) {
+      return score
+   }
+
+   if (typeof score !== 'string') {
+      return null
+   }
+
    const direct = Number.parseFloat(score)
    if (Number.isFinite(direct)) {
       return direct
@@ -124,9 +135,80 @@ function extractScoreValue(score: string): number | null {
    return Number.isFinite(parsed) ? parsed : null
 }
 
-function mapSeverity(vulnerability: ParsedPackageVulnerability, impactAssessment?: ImpactAssessment): UiSeverity {
-   const maxScore = vulnerability.severity.reduce<number | null>((currentMax, entry) => {
-      const value = extractScoreValue(entry.score)
+function toSeverityEntries(
+   severity: ParsedPackageVulnerability['severity'],
+): VulnerabilitySeverity[] {
+   if (Array.isArray(severity)) {
+      return severity.filter(
+         (entry): entry is VulnerabilitySeverity =>
+            Boolean(entry) &&
+            typeof entry === 'object' &&
+            typeof entry.type === 'string' &&
+            (typeof entry.score === 'string' || typeof entry.score === 'number'),
+      )
+   }
+
+   if (
+      severity &&
+      typeof severity === 'object' &&
+      (typeof severity.score === 'string' || typeof severity.score === 'number')
+   ) {
+      return [
+         {
+            type:
+               typeof severity.type === 'string' ? severity.type : 'unknown',
+            score: severity.score,
+         },
+      ]
+   }
+
+   return []
+}
+
+function getCvssNumericScore(rawScore: string | number): number | null {
+   if (typeof rawScore === 'string') {
+      const trimmed = rawScore.trim()
+      if (trimmed.length > 0) {
+         try {
+            const score = calculateBaseScore(trimmed)
+            if (Number.isFinite(score)) {
+               return score
+            }
+         } catch {
+            // Non-vector values are handled by numeric parsing fallback.
+         }
+      }
+   }
+
+   return extractScoreValue(rawScore)
+}
+
+function mapSeverityFromScore(score: number): UiSeverity {
+   if (score >= 9) {
+      return 'critical'
+   }
+   if (score >= 7) {
+      return 'high'
+   }
+   return 'medium'
+}
+
+function toSeverityRating(severity: UiSeverity): UiVulnerabilityItem['severityRating'] {
+   if (severity === 'critical') {
+      return 'Critical'
+   }
+   if (severity === 'high') {
+      return 'High'
+   }
+   return 'Medium'
+}
+
+function getSeverityData(
+   vulnerability: ParsedPackageVulnerability,
+   impactAssessment?: ImpactAssessment,
+): Pick<UiVulnerabilityItem, 'severity' | 'severityScore' | 'severityRating'> {
+   const maxScore = toSeverityEntries(vulnerability.severity).reduce<number | null>((currentMax, entry) => {
+      const value = getCvssNumericScore(entry.score)
       if (value === null) {
          return currentMax
       }
@@ -137,22 +219,29 @@ function mapSeverity(vulnerability: ParsedPackageVulnerability, impactAssessment
    }, null)
 
    if (maxScore !== null) {
-      if (maxScore >= 9) {
-         return 'critical'
+      const normalized = Math.max(0, Math.min(10, maxScore))
+      const severity = mapSeverityFromScore(normalized)
+      return {
+         severity,
+         severityScore: normalized.toFixed(1),
+         severityRating: toSeverityRating(severity),
       }
-      if (maxScore >= 7) {
-         return 'high'
-      }
-      return 'medium'
    }
 
-   if (impactAssessment?.impactLevel === 'critical') {
-      return 'critical'
+   if (impactAssessment?.impactLevel === 'critical' || impactAssessment?.impactLevel === 'high') {
+      const severity = impactAssessment.impactLevel === 'critical' ? 'critical' : 'high'
+      return {
+         severity,
+         severityScore: undefined,
+         severityRating: toSeverityRating(severity),
+      }
    }
-   if (impactAssessment?.impactLevel === 'high') {
-      return 'high'
+
+   return {
+      severity: 'medium',
+      severityScore: undefined,
+      severityRating: 'Medium',
    }
-   return 'medium'
 }
 
 function getCve(vulnerability: ParsedPackageVulnerability): string {
@@ -191,10 +280,18 @@ const uiVulnerabilities: UiVulnerabilityItem[] = scanResponse.vulnerabilities.fl
       packageEntry.vulnerableSnippets.length > 0 ? 'reachable' : 'not-reachable'
    const proof = buildProof(packageEntry.vulnerableSnippets)
 
-   return packageEntry.vulnerabilities.map((vulnerability) => ({
+   return packageEntry.vulnerabilities.map((vulnerability) => {
+      const severityData = getSeverityData(
+         vulnerability,
+         packageEntry.impactAssessment,
+      )
+
+      return {
       library: packageEntry.packageName,
       version: toVersionLabel(packageEntry.packageVersion),
-      severity: mapSeverity(vulnerability, packageEntry.impactAssessment),
+      severity: severityData.severity,
+      severityScore: severityData.severityScore,
+      severityRating: severityData.severityRating,
       reachability,
       cve: getCve(vulnerability),
       description:
@@ -205,7 +302,8 @@ const uiVulnerabilities: UiVulnerabilityItem[] = scanResponse.vulnerabilities.fl
          packageEntry.impactAssessment?.remediation ??
          'Upgrade to a non-vulnerable version and validate impacted usage paths.',
       proof,
-   }))
+      }
+   })
 })
 
 const vulnerabilitiesDetected = uiVulnerabilities.length
@@ -265,6 +363,8 @@ const securityPostureHint =
             library={item.library}
             version={item.version}
             severity={item.severity}
+            severityScore={item.severityScore}
+            severityRating={item.severityRating}
             reachability={item.reachability}
             cve={item.cve}
             description={item.description}
