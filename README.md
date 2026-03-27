@@ -1,6 +1,6 @@
 # AskMe
 
-Monorepo for AI assisted Source Code analysis tools
+Monorepo for AI assisted Source Code analysis tools and experiments.
 
 ## Objective
 
