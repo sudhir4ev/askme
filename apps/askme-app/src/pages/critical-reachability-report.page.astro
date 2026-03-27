@@ -30,8 +30,12 @@ interface VulnerableSnippet {
 }
 
 interface ImpactAssessment {
+   summary: string
    remediation?: string
+   impactScore: number
    impactLevel: 'low' | 'medium' | 'high' | 'critical'
+   impactDescription?: string
+   impactRecommendation?: string
 }
 
 interface VulnerabilityByPackage {
@@ -62,6 +66,13 @@ interface UiVulnerabilityItem {
    cve: string
    description: string
    remediation: string
+   impactAssessment?: {
+      summary: string
+      impactScore: number
+      impactLevel: 'low' | 'medium' | 'high' | 'critical'
+      impactDescription?: string
+      impactRecommendation?: string
+   }
    proof?: {
       file: string
       line: number
@@ -301,6 +312,16 @@ const uiVulnerabilities: UiVulnerabilityItem[] = scanResponse.vulnerabilities.fl
       remediation:
          packageEntry.impactAssessment?.remediation ??
          'Upgrade to a non-vulnerable version and validate impacted usage paths.',
+      impactAssessment: packageEntry.impactAssessment
+         ? {
+              summary: packageEntry.impactAssessment.summary,
+              impactScore: packageEntry.impactAssessment.impactScore,
+              impactLevel: packageEntry.impactAssessment.impactLevel,
+              impactDescription: packageEntry.impactAssessment.impactDescription,
+              impactRecommendation:
+                 packageEntry.impactAssessment.impactRecommendation,
+           }
+         : undefined,
       proof,
       }
    })
@@ -369,6 +390,7 @@ const securityPostureHint =
             cve={item.cve}
             description={item.description}
             remediation={item.remediation}
+            impactAssessment={item.impactAssessment}
             proof={item.proof}
             expanded={index === 0}
          />
