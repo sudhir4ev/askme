@@ -23,6 +23,8 @@ coverage
 # Vercel
 .vercel
 
+.cursor/*.log
+
 # Build Outputs
 .next/
 out/
