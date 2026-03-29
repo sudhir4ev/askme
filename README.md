@@ -8,13 +8,16 @@ Analyze a source project for vulnerable dependencies and produce actionable, con
 
 <img src="./docs/assets/banner.png">
 
-## How it works!
+## App setup
 
 - `apps/askme-server`: NestJS API that exposes vulnerability scan services.   
    - scans dependencies (OSV) [google/osv-scanner](https://github.com/google/osv-scanner)
    - extracts code usage context (AST) [tree-sitter](https://www.npmjs.com/package/tree-sitter),
    - Enriches vulnerabilities with impact analysis. Basic RAG using CVE advisories embeddigns and code snippets of exposed code snippet (Chroma + OpenAI).
 - `apps/askme-app`: Astro UI for presenting vulnerability reports.
+
+## Key peices
+- [Impact analysis](./docs/impact-analysis.md)
 
 ## Requirements
 
@@ -57,4 +60,5 @@ Analyze a source project for vulnerable dependencies and produce actionable, con
    starts frontend and backend dev services
    - Frontend: `http://localhost:4321`
    - API: `http://localhost:3000`
+
 
