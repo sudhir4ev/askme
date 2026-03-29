@@ -17,7 +17,7 @@ Analyze a source project for vulnerable dependencies and produce actionable, con
 - `apps/askme-app`: Astro UI for presenting vulnerability reports.
 
 ## Key peices
-- [Impact analysis](./docs/impact-analysis.md)
+- [Impact analysis](docs/impact-analysis.md)
 
 ## Requirements
 
