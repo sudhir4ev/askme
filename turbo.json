@@ -15,6 +15,10 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "cli": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

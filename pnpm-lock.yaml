@@ -89,9 +89,9 @@ importers:
       chromadb:
         specifier: ^3.4.0
         version: 3.4.0
-      initial-debug:
-        specifier: workspace:^
-        version: link:../../services/initial-debug
+      commander:
+        specifier: ^14.0.3
+        version: 14.0.3
       langchain:
         specifier: ^1.2.36
         version: 1.2.36(@langchain/core@1.1.35(openai@6.32.0(zod@4.3.6)))(openai@6.32.0(zod@4.3.6))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
