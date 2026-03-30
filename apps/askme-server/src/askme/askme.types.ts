@@ -20,7 +20,6 @@ export interface SourceFetchResponse {
 export interface SourceScanRequest {
   requestId: string;
   sourceId: string;
-  skipCache?: boolean;
 }
 
 export interface SourceStatusResponse {

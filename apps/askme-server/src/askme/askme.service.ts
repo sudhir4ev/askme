@@ -146,9 +146,7 @@ export class AskMeService {
 
     try {
       const response = await this.vulnerabilityScanService.scan(
-        request.requestId,
         sourceRecord.sourcePath,
-        request.skipCache,
       );
       await this.documentStorageRepository.setDocument(
         this.buildSourceScanKey(request.sourceId),
