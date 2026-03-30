@@ -5,7 +5,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "dev:server": "turbo run dev --filter=askme-server",
-    "cli": "turbo run cli --filter=askme-server",
+    "cli": "turbo run cli --filter=askme-server --",
     "dev:app": "turbo run dev --filter=askme-app",
     "test": "turbo run test",
     "lint": "turbo run lint",

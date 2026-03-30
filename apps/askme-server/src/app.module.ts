@@ -8,7 +8,13 @@ import { AskMeModule } from './askme/askme.module';
 import { CliAppModule } from './cli-app/cli-app.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), VulnerabilityScanModule, AstModule, AskMeModule, CliAppModule],
+  imports: [
+    ConfigModule.forRoot(),
+    VulnerabilityScanModule,
+    AstModule,
+    AskMeModule,
+    CliAppModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
